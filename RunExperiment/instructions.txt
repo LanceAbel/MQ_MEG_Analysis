@@ -1,0 +1,57 @@
+Working version: 		D:\BHPC_Files\ME_199_Lance\New Experiment\oddball_short_master.m
+
+
+
+Running experiment
+Once-off:
+
+	Put sound .wavs in: 		D:\BHPC_Files\ME_199_Lance\New Experiment\Sounds
+	Put tone frequency list in:	D:\BHPC_Files\ME_199_Lance\New Experiment\Tone Inputs\
+	Define conditions:		D:\BHPC_Files\ME_199_Lance\New Experiment\exp_conditions.txt
+					Row = [a b c]
+	    					a = child (or adult) number      (a counts up 1, 2, 3, 4, 5 for BOTH children < 18 and adults)
+										 i.e. the count goes up separately for each
+						b = number of 2ND experiment to run
+								Options were
+									1: skewed reps uniform tones lowvol
+									2: skewed reps uniform tones high vol
+									3: uniform reps uniform tones low vol
+									5: skewed reps skewed tones low vol
+							
+						c = number of 3RD experiment to run
+
+Each time:
+	Open mixer:	D:\BHPC_Files\ME_199_Lance\New Experiment\Mixer\roving_MMR Lance.tmws
+
+
+	Define oddball_short_master.m -> sub = '900x', inits (initials) = 'LA' (e.g.), par_num = 1 for 9002 then count up separately for adults/kids 
+		Then run - selecting 1 for 'run' input (1st session for adults + children: 15 mins)
+			Then abort, and play sounds for 30 secs
+			Then new marker coil measurement
+		
+		Then run - selecting 2 for 'run' input (2nd session for adults: 10 mins)
+			Then abort, and play sounds for 30 secs
+			Then new marker coil measurement
+		Then run - selecting 3 for 'run' input (2nd session for adults: 10 mins)
+			Then abort, and play sounds for 30 secs
+			Then new marker coil measurement
+
+
+
+
+AFTER
+Results saved in 		D:\BHPC_Files\ME_199_Lance\New Experiment\Exp Data\90xx\ (matlab path)
+	Save oddball_9xxx with script settings in same path
+		% Once-per-day param set
+		sub     = '9002'                    % input('Subject Number: ');                    % '9003'(STRING): counts one up by 1 from 9000/9001 (trials) for each subject
+		inits   = 'SJ'                      % input('Subject Initials: ');                  % 'AH'  (STRING)
+		par_num = 1                         % input('Enter participant # child/adult: ')    % 2     (NUMBER): use 2 for 2nd adult, 3 for 3rd child
+	(upload after experiment to UniDumpLaptop->All_Participants-> Adult/Child)
+
+
+.log file is saved in: 		D:\BHPC_Files\ME_199_Lance\New Experiment\Sounds
+	(move to D:\BHPC_Files\ME_199_Lance\New Experiment\Exp Data\9xxx after experiment)
+
+Update participant log		D:\BHPC_Files\ME_199_Lance\New Experiment\Exp Data\participant_log.txt
+	with which experiment they did
+	This is also in the (e.g.) oddball_9002_SJ_2022_1_7_run_2_exp_2.mat and oddball_9002_SJ_2022_1_7_run_2_exp_2.txt
