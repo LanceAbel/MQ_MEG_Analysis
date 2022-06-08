@@ -12,8 +12,8 @@ To run (Note: I'm going to replace steps 5-7 with a **do_everything.py **):
 
 
   
-  \
-
+  
+  
   
 Experiment code to run in the lab is in the **RunExperiment** folder (requires Cogent2000)
 HGF output predictions for my participants with IDs >= 9000 in the **Predictions** folder  
