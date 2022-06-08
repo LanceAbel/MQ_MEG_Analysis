@@ -1,4 +1,4 @@
-To run:  
+To run (Note: I'm going to replace steps 5-7 with a **do_everything.py **):    
 
 1) Install packages as per requirements.txt  
 2) Set **config.py**  
@@ -10,10 +10,10 @@ To run:
 6) Create a standardised copy of the saved participant data by running **standardise_all_3.py**  
 7) Run **save_output_graphs.py**   
 
-<Note: I'm going to replace steps 5-7 with a **do_everything.py ** >  
+
   
-  
-<>
+  \\
+
   
 Experiment code to run in the lab is in the **RunExperiment** folder (requires Cogent2000)
 HGF output predictions for my participants with IDs >= 9000 in the **Predictions** folder  
