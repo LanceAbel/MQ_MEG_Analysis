@@ -122,6 +122,12 @@ def try_return(obj,attr):
     else:
         return None
            
+def delete_indices(lst,indices_to_delete):
+    '''Delete numbered indices from a list'''    
+    for index in sorted(indices_to_delete, reverse=True):
+        del lst[index]
+    return lst
+
 def try_del(items):
     '''Try to delete a variable'''
     for item in items:
@@ -201,9 +207,81 @@ def increment_ct(dct,key):
     else:
         dct[key] = 1
 
- 
+def r_confidence(p_cutoff, n):
+    num_comparisons = 1 # 4
+    num_timepoints  = 13
+    p_cutoff_bonferroni = p_cutoff/2 / (num_comparisons*num_timepoints)
+
+    z_null = 0
+    z_critical = st.norm.ppf(1 - p_cutoff_bonferroni*0.5) # 1.96 at p=0.05
+    print(z_critical)
+    z_confidence = [z_null-z_critical*math.sqrt(1/(n-3)),z_null+z_critical*math.sqrt(1/(n-3))]
+    print(z_confidence)
+    r_confidence = [fisher_z_to_r(z_confidence[0]), fisher_z_to_r(z_confidence[1])]
+    print(r_confidence)
+    return r_confidence
+
+
+
+def compare_corrs_to_threshold(times,line1,line2,threshold_line,y_min,y_max,ylabel='Correlation', filename = "Plot 2 lines.jpg"):
+    plt.ylim([y_min,y_max])    
+    plt.xlim([min(times),max(times)])
+    x_ticks = times
+    y_ticks = np.array([y_min+(y_max-y_min)*r/4 for r in range(0,5)])
+    
+    plt.yticks(np.arange(y_min, y_max, (y_max-y_min)/4), fontsize=FONTSIZE_AXES)
+
+    plt.ylabel(ylabel, fontsize=FONTSIZE_LABELS, labelpad=PADDING)      
+    plt.xlabel("Time (ms)", fontsize=FONTSIZE_LABELS, labelpad=PADDING)  
+    plt.title(ylabel + " vs significance threshold", fontsize=FONTSIZE_TITLE)
+    
+    plt.yticks(fontsize=FONTSIZE_AXES)
+    plt.xticks(fontsize=FONTSIZE_AXES, rotation=90)    
+    
+    plt.plot(x_ticks, threshold_line, 'g:', linewidth=1, label="Significance threshold")
+    plt.plot(x_ticks, line2, 'b', linewidth=3, label = "High surprise trials")  
+    plt.plot(x_ticks, line1, 'r', linewidth=3, label = "Low surprise trials") 
+    
+    
+    plt.legend(loc='upper right', frameon=False, fontsize=FONTSIZE_LEGEND)
+    
+    plt.savefig(filename, dpi=DPI)
+    plt.show()
+# # Running
+# corrs1f = ['{0:.3f}'.format(x) for x in corrs1]
+# corrs2f = ['{0:.3f}'.format(x) for x in corrs2]
+# threshold_linef = ['{0:.3f}'.format(x) for x in threshold_line]
+# corrs1f = [float(x) for x in corrs1f]
+# corrs2f = [float(x) for x in corrs2f]
+# threshold_linef = [float(x) for x in threshold_linef]
+
+# y_min = min(min(corrs1f),min(corrs2f))
+# y_max = (1+padding)*max(max(corrs1f),max(corrs2f))
+# y_min = (1+padding)*y_min if (y_min < 0 and y_max > 0) else (1-padding)*y_min
+
+# stat_to_use = 'corr'
+# filename = "Correlation vanilla PE2 to GFP.jpg"
+# plt.rcParams["figure.figsize"] = (8,5.5)
+
+# if stat_to_use == 'corr':
+#     ylabel='Correlation'
+# elif stat_to_use == 'slope':
+#     ylabel = 'Slope'
+# if min(corrs1) < 0 and min(corrs2) <=0:
+#     threshold_line = [-x for x in threshold_line]
+#     compare_corrs_to_threshold(times, ylabel= ylabel, line1=corrs1f, line2=corrs2f, threshold_line=threshold_linef, y_min=y_min, y_max=y_max, filename=filename)    
+# elif min(corrs1) < 0 and min(corrs2) >=0:
+#     compare_corrs_to_threshold(times, ylabel= ylabel, line1=corrs1f, line2=corrs2f, threshold_line=threshold_linef, y_min=y_min, y_max=y_max, filename=filename)    
+#     threshold_line = [-x for x in threshold_line]
+#     compare_corrs_to_threshold(times, ylabel= ylabel, line1=corrs1f, line2=corrs2f, threshold_line=threshold_linef, y_min=y_min, y_max=y_max, filename=filename)    
+# else:
+#     compare_corrs_to_threshold(times, ylabel= ylabel, line1=corrs1f, line2=corrs2f, threshold_line=threshold_linef, y_min=y_min, y_max=y_max, filename=filename)        
+
+
+
+
 def RMS_DF(df):
-    '''Return the root mean square of all the values across MEG data columns in a df for each time period'''
+    '''Return the standard deviation of all the values across MEG data columns in a df for each time period'''
     times = df['time'].values
     indices = df.index.values
     rms_values = []
@@ -260,11 +338,11 @@ def centre_sensor_locations(evoked):
                 x_s.append(loc[0])
                 y_s.append(loc[1])
                 z_s.append(loc[2])
-#                 for r in range(3,11): # Other dimensions don't do anything
-#                     if r in others.keys():
-#                         others[r].append(loc[r])
-#                     else:
-#                         others[r] = [loc[r]]
+                for r in range(3,11): # Other dimensions don't do anything
+                    if r in others.keys():
+                        others[r].append(loc[r])
+                    else:
+                        others[r] = [loc[r]]
 
     avg_ = {}
     avg_x = sum(x_s)/len(x_s)
