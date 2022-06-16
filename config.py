@@ -40,8 +40,8 @@ STANDARDISE                = False      # Whether to standardise the ERF values 
 #Time window of analysis
 EPOCH_START                = -0.1
 EPOCH_END                  = 0.3
-EPOCH_START_ANALYSIS       = 0.13       # The min latency at which we expect a MMR based on previous research (secs)
-EPOCH_END_ANALYSIS         = 0.19       # The max latency at which we expect a MMR based on previous research (secs)
+EPOCH_START_ANALYSIS       = 0.0       # The min latency at which we expect a MMR based on previous research (secs)
+EPOCH_END_ANALYSIS         = 0.295       # The max latency at which we expect a MMR based on previous research (secs)
 EPOCH_SIZE_MS              = 5
 NUM_BINS_SURPRISE          = 5          # x binsA, we divide the sample into the top and bottom 100%/x bins as high and low suirprise respectively. So 5 gives 0-20th and 80-100th percentiles of surprise
 SEC_TO_MS                  = 1000
@@ -100,9 +100,9 @@ CONT_PREDICTOR_USE_DIFF_CUTOFF  = True  # If True, will split the predicted surp
 # Which predictors we are assessing - pick one
 events_to_tag = {0: "frequencies",             # Choose a mode for which events we care about within participant data by setting its value to 1. Can change this later and continue running
                  
-                 0: "deviants", 0: "deviants_custom", 0: 'deviants_custom_combine', 0: "deviants_specific",
+                 0: "deviants", 1: "deviants_custom", 0: 'deviants_custom_combine', 0: "deviants_specific",
                  
-                 1: "hgf_pe2",   0: "hgf_pe2_mod_baked",    0: "hgf_pe2_mod",    
+                 0: "hgf_pe2",   0: "hgf_pe2_mod_baked",    0: "hgf_pe2_mod",    
                  0: "hgf_pwpe2", 0: "hgf_pwpe2_mod_baked",  # 0: "hgf_pwpe2_mod",   # Wasn't created
                  0: "hgf_pe3",   0: "hgf_pe3_mod_baked",    # 0: "hgf_pe3_mod",     # Wasn't created    
                  0: "hgf_pwpe3", 0: "hgf_pwpe3_mod_baked",  # 0: "hgf_pwpe3_mod",   # Wasn't created 
@@ -114,9 +114,9 @@ events_to_tag = {0: "frequencies",             # Choose a mode for which events 
 # New conditions to apply (if CHANGE_CONDITION==True)
 events_to_tag_rerun = {0: "frequencies",             
                  
-                 0: "deviants", 0: "deviants_custom", 0: 'deviants_custom_combine', 0: "deviants_specific",
+                 0: "deviants", 1: "deviants_custom", 0: 'deviants_custom_combine', 0: "deviants_specific",
                  
-                 1: "hgf_pe2",   0: "hgf_pe2_mod_baked",        0: "hgf_pe2_mod",
+                 0: "hgf_pe2",   0: "hgf_pe2_mod_baked",        0: "hgf_pe2_mod",
                  0: "hgf_pwpe2", 0: "hgf_pwpe2_mod_baked",      # 0: "hgf_pwpe2_mod",   # Wasn't created
                  0: "hgf_pe3",   0: "hgf_pe3_mod_baked",        # 0: "hgf_pe3_mod",     # Wasn't created    
                  0: "hgf_pwpe3", 0: "hgf_pwpe3_mod_baked",      # 0: "hgf_pwpe3_mod",   # Wasn't created 
@@ -207,9 +207,14 @@ RESOLUTION      = 64 * 3
 SIZE            = 2
 YLIM            = 20
 DPI             = 600     # Plot quality
-FONTSIZE_TITLE  = 14
-FONTSIZE_AXES   = 13
-FONTSIZE_LABELS = 12
+FONTSIZE_ALL    = 14
+FONTSIZE_TITLE  = 19
+FONTSIZE_LABELS = 18  # Title on x and y axis
+FONTSIZE_AXES   = 16  # Values on x and y axes
+FONTSIZE_LEGEND = 13  # Legend
+PADDING         = 20  # Space between axis values and axis label
+
+
 sphere_x, sphere_y, sphere_z, radius = 0.007, -0.017, 0.00, 0.107
 CONSTANT_RADIUS_MULT = 1 # 0.85
 

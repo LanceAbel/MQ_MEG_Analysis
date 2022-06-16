@@ -37,6 +37,26 @@ from IPython.display import clear_output
 import inspect
 
 
+FONTSIZE_ALL = 13
+## Option A
+import matplotlib 
+font = {'family' : 'normal',
+        #'weight' : 'bold',
+        'size'   : FONTSIZE_ALL}
+
+matplotlib.rc('font', **font)
+#matplotlib.rcParams.update({'font.size': 22}) # Updates -> m
+matplotlib.rcParams.update({'font.sans-serif':'Times New Roman'})
+
+## Option B
+import matplotlib.pyplot as plt
+plt.rc('font', size=FONTSIZE_ALL)         # controls default text sizes
+plt.rc('axes', titlesize=FONTSIZE_ALL)    # fontsize of the axes title
+plt.rc('axes', labelsize=FONTSIZE_ALL)    # fontsize of the x and y labels
+plt.rc('xtick', labelsize=FONTSIZE_ALL)   # fontsize of the tick labels
+plt.rc('ytick', labelsize=FONTSIZE_ALL)   # fontsize of the tick labels
+plt.rc('legend', fontsize=FONTSIZE_ALL)   # legend fontsize
+plt.rc('figure', titlesize=FONTSIZE_ALL)  # fontsize of the figure title
 
 
 # Attributes to (optionally) delete from each individual participant when loading the whole experiment
@@ -245,21 +265,21 @@ class Experiment():
                     self.grand_averages_A_df = sum_df(self.grand_averages_A_df,mode='plain')
                     # Plot ERFs
                     #plt.plot(self.grand_averages_A_df['time'].values, self.grand_averages_A_df['sum'].values)
-                    #plt.legend(["ERF Condition:" +str(self.participants[0].cond_A), "ERF Condition:"+str(self.participants[0].cond_B)], bbox_to_anchor=(0.75, 1.15), ncol=2)
+                    #plt.legend(["ERF Condition:" +str(self.participants[0].cond_A), "ERF Condition:"+str(self.participants[0].cond_B)], bbox_to_anchor=(0.75, 1.15), ncol=2, fontsize=FONTSIZE_LEGEND)
                 plt_legend.append("Age Group "+str(key))
 
             if gfp_mode:
-                plt.title("GFP Condition A")
-                plt.ylabel("GFP fT")      
-                plt.xlabel("time (ms)")                
-                plt.legend(plt_legend)
+                plt.title("GFP Condition A", fontsize=FONTSIZE_TITLE)
+                plt.ylabel("GFP (fT)", fontsize=FONTSIZE_LABELS)      
+                plt.xlabel("Time (ms)", fontsize=FONTSIZE_LABELS)                
+                plt.legend(plt_legend, fontsize=FONTSIZE_LEGEND)
                 plt.show()                              
             else:
                 pass
-                # plt.title("ERFs Condition A")
-                # plt.ylabel("ERF fT")  
-                # plt.xlabel("time (ms)")                
-                # plt.legend(plt_legend)
+                # plt.title("ERFs Condition A", fontsize=FONTSIZE_TITLE)
+                # plt.ylabel("ERF (fT)", fontsize=FONTSIZE_LABELS)  
+                # plt.xlabel("Time (ms)", fontsize=FONTSIZE_LABELS)                
+                # plt.legend(plt_legend, fontsize=FONTSIZE_LEGEND)
                 # plt.show()     
             
             # Compare condition B for each age grouping
@@ -271,28 +291,28 @@ class Experiment():
                 if gfp_mode:
                     self.grand_averages_B_gfp_vs_time = RMS_DF(self.grand_averages_B_df)    
                     plt.plot(self.grand_averages_B_df['time'].values, self.grand_averages_B_gfp_vs_time)
-                    #plt.legend(["GFP Condition:" +str(self.participants[0].cond_A), "GFP Condition:"+str(self.participants[0].cond_B)], bbox_to_anchor=(0.75, 1.15), ncol=2)                    
+                    #plt.legend(["GFP Condition:" +str(self.participants[0].cond_A), "GFP Condition:"+str(self.participants[0].cond_B)], bbox_to_anchor=(0.75, 1.15), ncol=2, fontsize=FONTSIZE_LEGEND)                    
                 else: # Meaningless plot
                     #Somewhat meaningless 'sum' column
                     self.grand_averages_B_df = sum_df(self.grand_averages_B_df,mode='plain')
                     # Plot ERFs
                     #plt.plot(self.grand_averages_B_df['time'].values, self.grand_averages_B_df['sum'].values)
-                    #plt.legend(["ERF Condition:" +str(self.participants[0].cond_A), "ERF Condition:"+str(self.participants[0].cond_B)], bbox_to_anchor=(0.75, 1.15), ncol=2)
+                    #plt.legend(["ERF Condition:" +str(self.participants[0].cond_A), "ERF Condition:"+str(self.participants[0].cond_B)], bbox_to_anchor=(0.75, 1.15), ncol=2, fontsize=FONTSIZE_LEGEND)
                 plt_legend.append("Age Group "+str(key))
                 
                 
             if gfp_mode:
-                plt.title("GFP Condition B")
-                plt.ylabel("GFP fT")     
-                plt.xlabel("time (ms)")                
-                plt.legend(plt_legend)
-                plt.show()                                 
+                plt.title("GFP for high surprise trials", fontsize=FONTSIZE_TITLE)
+                plt.ylabel("GFP (fT)", fontsize=FONTSIZE_LABELS)      
+                plt.xlabel("Time (ms)", fontsize=FONTSIZE_LABELS)                
+                plt.legend(plt_legend, fontsize=FONTSIZE_LEGEND)
+                plt.show()                                  
             else:
                 pass
-                # plt.title("ERFs Condition B")
-                # plt.ylabel("ERF fT")  
-                # plt.xlabel("time (ms)")                
-                # plt.legend(plt_legend)
+                # plt.title("ERFs for high surprise trials", fontsize=FONTSIZE_TITLE)
+                # plt.ylabel("ERF (fT)", fontsize=FONTSIZE_LABELS)  
+                # plt.xlabel("Time (ms)", fontsize=FONTSIZE_LABELS)                
+                # plt.legend(plt_legend, fontsize=FONTSIZE_LEGEND)
                 # plt.show()    
             
             # Compare difference in condition B to condition A for each age grouping
@@ -300,12 +320,16 @@ class Experiment():
             for key in self.grand_averages_A.keys():
                 print("Age grouping ", key)
                 if gfp_mode:   # Option A - # Plot difference in GFPs
+                    self.grand_averages_A_df = self.grand_averages_A[key].to_data_frame()
+                    self.grand_averages_B_df = self.grand_averages_B[key].to_data_frame()
                     self.grand_averages_A_gfp_vs_time = RMS_DF(self.grand_averages_A_df)
                     self.grand_averages_B_gfp_vs_time = RMS_DF(self.grand_averages_B_df)
                     gfp_diff = [self.grand_averages_B_gfp_vs_time[r] - self.grand_averages_A_gfp_vs_time[r] for r in range(0,len(self.grand_averages_B_gfp_vs_time))]
                     plt.plot(self.grand_averages_A_df['time'].values,gfp_diff)                     
                 else:           # Option B - Plot difference in ERFs (MMR)
                     #Somewhat meaningless 'sum' column
+                    self.grand_averages_A_df = self.grand_averages_A[key].to_data_frame()
+                    self.grand_averages_B_df = self.grand_averages_B[key].to_data_frame()                    
                     self.grand_averages_A_df = sum_df(self.grand_averages_A_df,mode='plain')
                     self.grand_averages_B_df = sum_df(self.grand_averages_B_df,mode='plain')
 
@@ -315,15 +339,15 @@ class Experiment():
                 plt_legend.append("Age Group "+str(key))
             
             if gfp_mode:
-                plt.title("GFP (RMS) Condition B minus condition A")
-                plt.ylabel("GFP Difference fT")                  
+                plt.title("GFP for high surprise minus GFP for low surprise trials (""aMMR GFP"")", fontsize=FONTSIZE_TITLE)
+                plt.ylabel("GFP Difference fT", fontsize=FONTSIZE_LABELS)                  
             else:
                 pass
-                # plt.title("MMR (sum) Condition B minus condition A")
-                # plt.ylabel("ERF Difference fT")  
+                # plt.title("MMR (sum) Condition B minus condition A", fontsize=FONTSIZE_TITLE)
+                # plt.ylabel("ERF Difference (fT)", fontsize=FONTSIZE_LABELS)  
             
-            plt.xlabel("time (ms)")
-            plt.legend(plt_legend)
+            plt.xlabel("Time (ms)", fontsize=FONTSIZE_LABELS)
+            plt.legend(plt_legend, fontsize=FONTSIZE_LEGEND)
             plt.show()    
 
             del evoked_all_A, evoked_all_B
@@ -431,20 +455,20 @@ class Experiment():
         # Plot ERFs
         # plt.plot(self.grand_average_cond_A_df['time'].values, self.grand_average_cond_A_df['sum'].values)
         # plt.plot(self.grand_average_cond_B_df['time'].values, self.grand_average_cond_B_df['sum'].values)
-        # plt.legend(["ERF low surprise condition:" +str(cond_A), "ERF high surprise condition:"+str(cond_B)], bbox_to_anchor=(0.75, 1.15), ncol=2)
-        # plt.xlabel("time (ms)")
-        # plt.ylabel("Sum of ERFs across channels, fT")
-        # plt.title("Sum of ERFs across channels, in low (blue) & high (orange) expected surprise conditions")
+        # plt.legend(["ERF low surprise condition:" +str(cond_A), "ERF high surprise condition:"+str(cond_B)], bbox_to_anchor=(0.75, 1.15), ncol=2, fontsize=FONTSIZE_LEGEND)
+        # plt.xlabel("Time (ms)", fontsize=FONTSIZE_LABELS)
+        # plt.ylabel("Sum of ERFs across channels (fT)", fontsize=FONTSIZE_LABELS)
+        # plt.title("Sum of ERFs across channels, in low (blue) & high (orange) expected surprise conditions", fontsize=FONTSIZE_TITLE)
         # plt.show()
 
         # Plot difference in ERFs (MMR)
         self.grand_average_cond_AB_diff = self.grand_average_cond_B_df - self.grand_average_cond_A_df
         self.grand_average_cond_AB_diff['time'] = self.grand_average_cond_A_df['time']
         # plt.plot(self.grand_average_cond_AB_diff['time'].values, self.grand_average_cond_AB_diff['sum'].values)
-        # plt.legend(["ERF sum, high surprise condition:" +str(cond_B) +" *minus* low surprise condition:"+str(cond_A)], bbox_to_anchor=(0.75, 1.15), ncol=2)
-        # plt.xlabel("time (ms)")
-        # plt.ylabel("Difference of sum of ERFs across channels, fT")
-        # plt.title("MMR Cond B (high E[surprise]) - A (low E[surprise])")
+        # plt.legend(["ERF sum, high surprise condition:" +str(cond_B) +" *minus* low surprise condition:"+str(cond_A)], bbox_to_anchor=(0.75, 1.15), ncol=2, fontsize=FONTSIZE_LEGEND)
+        # plt.xlabel("Time (ms)", fontsize=FONTSIZE_LABELS)
+        # plt.ylabel("Difference of sum of ERFs across channels (fT)", fontsize=FONTSIZE_LABELS)
+        # plt.title("MMR Cond B (high E[surprise]) - A (low E[surprise])", fontsize=FONTSIZE_TITLE)
         # plt.show()    
         
         
@@ -476,11 +500,13 @@ class Experiment():
                     evokeds.append(evoked_object) # Compare ERFs for a specific condition  (condition A) in Group A to Group B 
             r+=1
 
-        grand_average = mne.grand_average(evokeds)
-        del evoked_object, evokeds
-        gc.collect()
-        return grand_average
-
+        if len(evokeds) > 0:
+            grand_average = mne.grand_average(evokeds)
+            del evoked_object, evokeds
+            gc.collect()
+            return grand_average
+        else:
+            print("Problem getting evokeds")
 
 
     def compare_group(self, condition=None):
@@ -504,10 +530,10 @@ class Experiment():
         # Plot ERFs
         # plt.plot(self.group_A_avg_df['time'].values, self.group_A_avg_df['sum'].values)
         # plt.plot(self.group_B_avg_df['time'].values, self.group_B_avg_df['sum'].values)
-        # plt.legend(["ERF Group A (younger)", "ERF Group B (older) for condition"+str(condition)], bbox_to_anchor=(0.75, 1.15), ncol=2)
-        # plt.xlabel("time (ms)")
-        # plt.ylabel("ERF fT") 
-        # plt.title("ERF Group A (younger), B (older) for condition "+str(condition))
+        # plt.legend(["ERF Group A (younger)", "ERF Group B (older) for condition"+str(condition)], bbox_to_anchor=(0.75, 1.15), ncol=2, fontsize=FONTSIZE_LEGEND)
+        # plt.xlabel("Time (ms)", fontsize=FONTSIZE_LABELS)
+        # plt.ylabel("ERF (fT)", fontsize=FONTSIZE_LABELS) 
+        # plt.title("ERF Group A (younger), B (older) for condition "+str(condition), fontsize=FONTSIZE_TITLE)
         # plt.show()     
 
         ## Calculate difference between groups
@@ -543,10 +569,10 @@ class Experiment():
         self.group_B_avg_MMR_df['time'] = self.group_B_avg_condB_df['time'].values
         plt.plot(self.group_A_avg_MMR_df['time'].values, self.group_A_avg_MMR_df['sum'].values)
         plt.plot(self.group_B_avg_MMR_df['time'].values, self.group_B_avg_MMR_df['sum'].values)
-        plt.legend(["MMR Group A (younger)", "MMR Group B (older)"], bbox_to_anchor=(0.75, 1.15), ncol=2)
-        plt.xlabel("time (ms)")
-        plt.ylabel("MMR fT") 
-        plt.title("MMRs for Group A (younger) and Group B (younger)")
+        plt.legend(["MMR Group A (younger)", "MMR Group B (older)"], bbox_to_anchor=(0.75, 1.15), ncol=2, fontsize=FONTSIZE_LEGEND)
+        plt.xlabel("Time (ms)", fontsize=FONTSIZE_LABELS)
+        plt.ylabel("MMR (fT)", fontsize=FONTSIZE_LABELS) 
+        plt.title("MMRs for Group A (younger) and Group B (younger)", fontsize=FONTSIZE_TITLE)
         plt.show()     
 
         ## Calculate difference in the MMR between groups
@@ -556,10 +582,10 @@ class Experiment():
 
         # Plot difference in the MMR between groups
         plt.plot(self.group_diff_MMR_df['time'].values, self.group_diff_MMR_df['sum'].values)
-        plt.legend(["Group A MMR minus Group B MMR"], bbox_to_anchor=(0.75, 1.15), ncol=2)
-        plt.xlabel("time (ms)")
-        plt.ylabel("MMR difference, fT")
-        plt.title("MMR Group A (younger) minus MMR Group B (older)")
+        plt.legend(["Group A MMR minus Group B MMR"], bbox_to_anchor=(0.75, 1.15), ncol=2, fontsize=FONTSIZE_LEGEND)
+        plt.xlabel("Time (ms)", fontsize=FONTSIZE_LABELS)
+        plt.ylabel("MMR difference (fT)", fontsize=FONTSIZE_LABELS)
+        plt.title("MMR Group A (younger) minus MMR Group B (older)", fontsize=FONTSIZE_TITLE)
         plt.show() 
 
      
@@ -810,7 +836,7 @@ class Experiment():
             n_jobs=NUM_CPUS_Other,
             n_permutations=N_PERMUTATIONS,
             tail = 0,
-            out_type='mask',
+            out_type='mask'
             #verbose='WARNING'
             #threshold=threshold, adjacency=None,    
             )
@@ -821,9 +847,9 @@ class Experiment():
 
         ## CANNOT PLOT SIGNIFICANT AREAS
         plt.plot(times, self.squares_diff_grp)
-        plt.ylabel("GFP difference, fT^2")
-        plt.title("Group B GFP minus Group A GFP, condition " +str(condition))
-        plt.legend(["Group B - Group A"])
+        plt.ylabel("GFP difference, fT^2", fontsize=FONTSIZE_LABELS)
+        plt.title("Group B GFP minus Group A GFP, condition " +str(condition), fontsize=FONTSIZE_TITLE)
+        plt.legend(["Group B - Group A"], fontsize=FONTSIZE_LEGEND)
 
         # Put the cluster data in a viewable format
         width = 1
@@ -841,9 +867,9 @@ class Experiment():
         if len(clusters) == 0:
             h = [0,0.1]
         try:
-            plt.xlabel("time (ms)")
-            plt.ylabel("f-values")
-            #plt.legend(["all selfs cond B - cond A"], bbox_to_anchor=(0.75, 1.15), ncol=1)
+            plt.xlabel("Time (ms)", fontsize=FONTSIZE_LABELS)
+            plt.ylabel("f-values", fontsize=FONTSIZE_LABELS)
+            #plt.legend(["all selfs cond B - cond A"], bbox_to_anchor=(0.75, 1.15), ncol=1, fontsize=FONTSIZE_LEGEND)
             plt.legend((h, ), ('cluster p-value < '+str(CLUSTER_CUTOFF), ))
             hf = plt.plot(times, T_obs, 'g')    
         except Exception as e:
@@ -1090,7 +1116,7 @@ class Experiment():
         self.cluster_analysis_new(          conditionA = all_gfps_cond_A,
                                             conditionB = all_gfps_cond_B,
                                             filename = 'GFP vs condition, differences, sig test' if file_name=='Normal' else None,
-                                            title = 'GFP vs time, Cond B - Cond A', # 'GFP vs time Cond B - GFP vs time Cond A',
+                                            title = 'GFP in high minus GFP in low expected surprise trials', # 'GFP Cond B - GFP Cond A',
                                             legend = ["GFP Cond B - GFP Cond A"],
                                             times =  self.grand_average_cond_A_df['time'].values,
                                             gfp_mode = True, group_mode=True, extract_data=False) 
@@ -1153,32 +1179,32 @@ class Experiment():
         self.cluster_analysis_new(          conditionA = all_gfps_grp_B_cond_both, # This gets switched around, so we subtract GFP for Group A from Group B (diff should be > 0)
                                             conditionB = all_gfps_grp_A_cond_both,
                                             filename = 'GFP vs age (conditions BOTH, '+str(size_age_bucket_percent)+'), sig test',
-                                            title = 'GFP vs time, both conditions, young minus old ('+str(size_age_bucket_percent)+' age cutoffs)',
-                                            legend = ["All conditions"],
+                                            title = 'GFP, both conditions\n Young minus old ('+str(size_age_bucket_percent)+' age cutoffs)',
+                                            legend = ["All conditions, young minus old"],
                                             times = self.grand_average_cond_A_df['time'].values,
                                             gfp_mode = True, group_mode=True, extract_data=False) 
         
         self.cluster_analysis_new(          conditionA = all_gfps_grp_B_cond_A,
                                             conditionB = all_gfps_grp_A_cond_A,
-                                            filename = 'GFP vs age (condition A, '+str(size_age_bucket_percent)+'), sig test',
-                                            title = 'GFP vs time, condition A, young minus old  ('+str(size_age_bucket_percent)+' age cutoffs)',
-                                            legend = ["Condition A"],
+                                            filename = 'GFP vs age (low surprise, '+str(size_age_bucket_percent)+'), sig test',
+                                            title = 'GFP, low surprise\n Young minus old  ('+str(size_age_bucket_percent)+' age cutoffs)',
+                                            legend = ["Low surprise, young minus old"],
                                             times = self.grand_average_cond_A_df['time'].values,
                                             gfp_mode = True, group_mode=True, extract_data=False)     
 
         self.cluster_analysis_new(          conditionA = all_gfps_grp_B_cond_B,
                                             conditionB = all_gfps_grp_A_cond_B,
-                                            filename = 'GFP vs age (condition B, '+str(size_age_bucket_percent)+'), sig test',
-                                            title = 'GFP vs time, condition B, young minus old ('+str(size_age_bucket_percent)+' age cutoffs)',
-                                            legend = ["Condition B"],
+                                            filename = 'GFP vs age (high surprise, '+str(size_age_bucket_percent)+'), sig test',
+                                            title = 'GFP, high surprise\n Young minus old ('+str(size_age_bucket_percent)+' age cutoffs)',
+                                            legend = ["High surprise, young minus old"],
                                             times = self.grand_average_cond_A_df['time'].values,
                                             gfp_mode = True, group_mode=True, extract_data=False)  
         
         self.cluster_analysis_new(          conditionA = all_gfps_grp_B_MMR,
                                             conditionB = all_gfps_grp_A_MMR,
                                             filename = 'GFP vs age (MMR, '+str(size_age_bucket_percent)+'), sig test',
-                                            title = '(GFP condB - GFP condA) vs time, young minus old ('+str(size_age_bucket_percent)+' age cutoffs)',
-                                            legend = ["MMR"],
+                                            title = '(GFP high surprise - GFP low surprise)\n Young minus old ('+str(size_age_bucket_percent)+' age cutoffs)',
+                                            legend = ["aMMR, young minus old"],
                                             times = self.grand_average_cond_A_df['time'].values,
                                             gfp_mode = True, group_mode=True, extract_data=False)      
 
@@ -1226,7 +1252,7 @@ class Experiment():
         info = evok_avg.info  
         #headshape = copy.deepcopy(self.group_A_avg['B'])
         headshape = self.sample_child.epochs_ransac_autoreject[self.sample_child.cond_A]
-        headshape = centre_sensor_locations(headshape)[0]
+        #headshape = centre_sensor_locations(headshape)[0]
         info = headshape.info
         # Adjacency matrix
         ch_adjacency, ch_names = mne.channels.find_ch_adjacency(info, 'mag');
@@ -1238,7 +1264,7 @@ class Experiment():
                                                                                     tail=0,
                                                                                     n_jobs=NUM_CPUS_Other,
                                                                                     out_type='mask',
-                                                                                    verbose='DEBUG',
+                                                                                    verbose='DEBUG'
                                                                                     #threshold=threshold, 
                                                                                     #adjacency=ch_adjacency
                                                                                     )
@@ -1256,26 +1282,26 @@ class Experiment():
                     plt.title('GFP for Group B (older)  minus group A (younger), condition='+str(condition_label), fontsize=FONTSIZE_TITLE) 
                 else:
                     plt.title(title, fontsize=FONTSIZE_TITLE)
-                plt.ylabel("Difference in GFP")
+                plt.ylabel("Difference in GFP", fontsize=FONTSIZE_LABELS)
             else:
                 if title==None:
                     plt.title('ERF for Group B (older)  minus group A (younger), condition='+str(condition_label), fontsize=FONTSIZE_TITLE) 
                 else:
                     plt.title(title, fontsize=FONTSIZE_TITLE)
-                plt.ylabel("GFP difference")
+                plt.ylabel("GFP difference", fontsize=FONTSIZE_LABELS)
         else:
             if gfp_mode:
                 if title==None:            
-                    plt.title("GFP for Condition B (high expected surprise) minus Condition A (low expected surprise), condition="+str(condition_label), fontsize=FONTSIZE_TITLE)
+                    plt.title("GFP for high expected surprise trials minus GFP for low expected surprise trials, condition="+str(condition_label), fontsize=FONTSIZE_TITLE)
                 else:
                     plt.title(title, fontsize=FONTSIZE_TITLE)
-                plt.ylabel("Difference in GFP")
+                plt.ylabel("Difference in GFP", fontsize=FONTSIZE_LABELS)
             else:
                 if title==None:            
-                    plt.title("ERF for Condition B (high expected surprise) minus Condition A (low expected surprise), condition="+str(condition_label), fontsize=FONTSIZE_TITLE)
+                    plt.title("ERF for high expected surprise trials minus ERF for low expected surprise trials, condition="+str(condition_label), fontsize=FONTSIZE_TITLE)
                 else:
                     plt.title(title, fontsize=FONTSIZE_TITLE)
-                plt.ylabel("MEG signal difference (fT)")
+                plt.ylabel("MEG signal difference (fT)", fontsize=FONTSIZE_LABELS)
 
         diff = conditionB.mean(axis=0) - conditionA.mean(axis=0)
         if len(diff) != len(times):
@@ -1284,14 +1310,14 @@ class Experiment():
             T_obs = T_obs[0:len(times)]
 
         plt.plot(times, diff)
-        plt.ylabel("MEG (fT)")
+        plt.ylabel("MEG (fT)", fontsize=FONTSIZE_LABELS)
         if legend == None:
             if group_mode:
-                plt.legend(["Group B - Group A"])            
+                plt.legend(["Group B - Group A"], fontsize=FONTSIZE_LEGEND)            
             else:
-                plt.legend(["Cond B - Cond A"])
+                plt.legend(["Cond B - Cond A"], fontsize=FONTSIZE_LEGEND)
         else:
-            plt.legend(legend)
+            plt.legend(legend, fontsize=FONTSIZE_LEGEND)
             
         plt.subplot(212)
         times = list(times)
@@ -1308,10 +1334,10 @@ class Experiment():
         if len(clusters) == 0:
             h = [0,0.1]
         hf = plt.plot(times, T_obs, 'g')
-        plt.xlabel("time (ms)")
-        plt.ylabel("f-values")
-        #plt.legend(["all Grps cond B - cond A"], bbox_to_anchor=(0.75, 1.15), ncol=1)
-        plt.legend((h, ), ('cluster p-value < '+str(cluster_cutoff), ))
+        plt.xlabel("Time (ms)", fontsize = FONTSIZE_LABELS)
+        plt.ylabel("F-values", fontsize = FONTSIZE_LABELS)
+        #plt.legend(["all Grps cond B - cond A"], bbox_to_anchor=(0.75, 1.15), ncol=1, fontsize=FONTSIZE_LEGEND)
+        plt.legend((h, ), ('cluster p-value < '+str(cluster_cutoff), ), fontsize = FONTSIZE_LEGEND)
         if filename!=None:
             plt.savefig(filename+ " "+timestring+".jpg",
                             format='jpeg',
@@ -1331,14 +1357,14 @@ class Experiment():
     def return_method_dct(self,str_):
         '''Return a dictionary with a key's value modified to True
         '''
-        method_dct = {  'USE_ALL_TRIALS':         False,    # Do regression over all trials
-                        'USE_RAW_HIGH_SURPRISE':  False,     # Only do regression over 'deviant'/surprising/condition_B *events*.                                             
-                        'USE_RAW_LOW_SURPRISE':   False,    # Only do regression over 'pre-deviant'/unsurprising/condition_A *events*. 
+        method_dct = {  'on all trials':                        False,     # Do regression over all trials
+                        'on high surprise trials':              False,     # Only do regression over 'deviant'/surprising/condition_B *events*.                                             
+                        'on low surprise trials':               False,     # Only do regression over 'pre-deviant'/unsurprising/condition_A *events*. 
 
-                        'SUBTRACT_AVERAGE_ALL':   False,    # Subtract average from *every* epoch 
-                        'USE_HIGH_SURPRISE_ONLY': False,    # Subtract high surprise average from every high surprise epoch
-                        'USE_LOW_SURPRISE_ONLY':  False,    # Subtract low surprise average from every low surprise epoch
-                        'SUBTRACT_DEVIANTS_ONLY': False    # Subtract 'deviants'/surprising/condition_B from 'predeviants'/less-surprising/condition_A
+                        'subtracting average of all trials':    False,     # Subtract average from *every* epoch 
+                        'subtracting high surprise average':    False,     # Subtract high surprise average from every high surprise epoch
+                        'subtracting low surprise average':     False,     # Subtract low surprise average from every low surprise epoch
+                        'subtracting deviants only':            False      # Subtract 'deviants'/surprising/condition_B from 'predeviants'/less-surprising/condition_A
                      }
 
         method_dct[str_] = True
@@ -1486,8 +1512,9 @@ class Experiment():
         t_obs, clusters, cluster_pv, h0 = mne.stats.spatio_temporal_cluster_test(X, n_permutations=N_PERMUTATIONS, 
                                                      #threshold=threshold, # Inputting NONE makes it use p < 0.05
                                                      tail=0,
-                                                     n_jobs=1,
-                                                     adjacency=ch_adjacency) 
+                                                     n_jobs=1
+                                                     #adjacency=ch_adjacency
+                                                     ) 
         print("Cluster p values ", cluster_pv)
         good_cluster_inds = np.where(cluster_pv < CLUSTER_CUTOFF)[0]
         print("Good cluster indices: ", good_cluster_inds)
@@ -1685,23 +1712,23 @@ class Experiment():
                 ptcp.surprise_prediction = ptcp.surprise[ptcp.surprise_relevant_series]
                 pred_surprise_vals = ptcp.surprise_prediction    # Uses self.surprise_prediction = self.surprise[self.surprise_relevant_series]
 
-                if method_dct['USE_ALL_TRIALS'] == True:
+                if method_dct['on all trials'] == True:
                     epochs_all_df = epochs_all.to_data_frame()
                     epochs_all_surprise_indices = sorted(list(set(epochs_all_df['epoch'].values)))
                     retained_epoch_indices = epochs_all_surprise_indices # retain all trials
-                elif method_dct['USE_RAW_LOW_SURPRISE'] == True:
+                elif method_dct['on low surprise trials'] == True:
                     epochs_low_surprise = epochs_all[condition_A]
                     epochs_low_surprise_df = epochs_low_surprise.to_data_frame()
                     epochs_low_surprise_indices = sorted(list(set(epochs_low_surprise_df['epoch'].values)))
                     retained_epoch_indices = epochs_low_surprise_indices
                     pred_surprise_vals = [pred_surprise_vals[r] for r in epochs_low_surprise_indices] # Subset of predictions          
-                elif method_dct['USE_RAW_HIGH_SURPRISE'] == True:       
+                elif method_dct['on high surprise trials'] == True:       
                     epochs_high_surprise = epochs_all[condition_B]
                     epochs_high_surprise_df = epochs_high_surprise.to_data_frame()
                     epochs_high_surprise_indices = sorted(list(set(epochs_high_surprise_df['epoch'].values)))
                     retained_epoch_indices = epochs_high_surprise_indices
                     pred_surprise_vals = [pred_surprise_vals[r] for r in epochs_high_surprise_indices] # Subset of predictions              
-                elif method_dct['SUBTRACT_DEVIANTS_ONLY'] == True or method_dct['USE_HIGH_SURPRISE_ONLY'] == True :     
+                elif method_dct['subtracting deviants only'] == True or method_dct['subtracting high surprise average'] == True :     
                     # Method A to calculate which epochs to retain
                     evts = ptcp.events[:, 2]
                     evts_high_surprise = [r for r in range(0,len(evts)) if evts[r] == float(condition_B)]
@@ -1714,7 +1741,7 @@ class Experiment():
                     epochs_high_surprise_indices = sorted(list(set(epochs_high_surprise_df['epoch'].values)))
                     retained_epoch_indices = epochs_high_surprise_indices
                     pred_surprise_vals = [pred_surprise_vals[r] for r in epochs_high_surprise_indices] # Subset of predictions
-                elif method_dct['SUBTRACT_DEVIANTS_ONLY'] == True:                   
+                elif method_dct['subtracting deviants only'] == True:                   
                     # Method A to calculate which epochs to retain
                     evts = ptcp.events[:, 2]
                     evts_low_or_high = [r for r in range(0,len(evts)) if (evts[r] == float(condition_A) or evts[r] == float(condition_B))]
@@ -1726,7 +1753,7 @@ class Experiment():
                     epochs_low_or_high_indices = sorted(list(set(epochs_low_or_high_df['epoch'].values)))
                     retained_epoch_indices = epochs_low_or_high_indices
                     pred_surprise_vals = [pred_surprise_vals[r] for r in epochs_low_or_high_indices] # Subset of predictions
-                elif method_dct['USE_LOW_SURPRISE_ONLY'] == True: 
+                elif method_dct['subtracting low surprise average'] == True: 
                     # Method A to calculate which epochs to retain
                     evts = ptcp.events[:, 2]
                     evts_low_surprise = [r for r in range(0,len(evts)) if evts[r] == float(condition_A)]
@@ -1760,13 +1787,13 @@ class Experiment():
                 
                 # print(len(conditionA),len(conditionB))
                 ## Option 2 - evoked with code 
-                if method_dct['USE_ALL_TRIALS'] == True:
+                if method_dct['on all trials'] == True:
                     epochs_diff = conditionAll
-                elif method_dct['USE_RAW_LOW_SURPRISE'] == True:
+                elif method_dct['on low surprise trials'] == True:
                     epochs_diff = conditionA            
-                elif method_dct['USE_RAW_HIGH_SURPRISE'] == True:
+                elif method_dct['on high surprise trials'] == True:
                     epochs_diff = conditionB            
-                elif method_dct['SUBTRACT_AVERAGE_ALL'] == True:
+                elif method_dct['subtracting average of all trials'] == True:
                     # The epoch object
                     epochs_df  = ptcp.evoked_generic_dfs  # All
                     #epochs_df = ptcp.evoked_generic_dfs[cond_code] # doesn't work as this is an average
@@ -1774,15 +1801,15 @@ class Experiment():
                     all_epochs_evoked = all_epochs.average() 
 
                     epochs_diff = all_epochs.subtract_evoked(all_epochs_evoked)     # Subtract avg from each epoch
-                elif method_dct['USE_LOW_SURPRISE_ONLY'] == True:
+                elif method_dct['subtracting low surprise average'] == True:
                     conditionA_evoked = conditionA.average()                
 
                     epochs_diff = conditionA.subtract_evoked(conditionA_evoked)     # Subtract the average of all condition A (pre-deviants) from condition A(expected to be unsurprising) for each epoch                
-                elif method_dct['USE_HIGH_SURPRISE_ONLY'] == True:
+                elif method_dct['subtracting high surprise average'] == True:
                     conditionB_evoked = conditionB.average()                
 
                     epochs_diff = conditionB.subtract_evoked(conditionB_evoked)     # Subtract the average of all condition B (deviants) from condition B(expected surprises) for each epoch
-                elif method_dct['SUBTRACT_DEVIANTS_ONLY'] == True:
+                elif method_dct['subtracting deviants only'] == True:
                     conditionA_evoked = conditionA.average() 
                     conditionB_evoked = conditionB.average()
 
@@ -1961,8 +1988,9 @@ class Experiment():
             array_avg_stat = []
             for chan in list(stats_arrays.keys()):
                 array_avg_stat.append([stats_arrays[chan][r] for r in range(0,len(sorted(times))) ])
-
-            statistics_head_avg_stat = self.sample_child.epochs_ransac_autoreject[self.sample_child.cond_B]  # Young people smaller head
+            self.get_child_adult_sample()
+            statistics_head_avg_stat = self.sample_child.epochs_ransac_autoreject[self.sample_child.cond_B].average() # Young people smaller head
+            #statistics_head_avg_stat = self.sample_child.epochs_ransac_autoreject[self.sample_child.cond_B]  # Young people smaller head
             #statistics_head_avg_stat = copy.deepcopy(self.group_A_avg['B'])                             # Young people smaller head
             array_num = 0
             for array in array_avg_stat:
@@ -2013,7 +2041,7 @@ class Experiment():
 
             # Replace the channel ERF data at any time/chan with the correlation for that time/chan instead of ERF
             self.get_child_adult_sample()
-            statistics_head     = copy.deepcopy(self.sample_child.epochs_ransac_autoreject[self.sample_child.cond_A])   # Young people smaller head
+            statistics_head     = copy.deepcopy(self.sample_child.epochs_ransac_autoreject[self.sample_child.cond_A].average()) # Young people smaller head
             #statistics_head    = copy.deepcopy(self.group_A_avg['B'])                                                  # Young people smaller head
             # statistics_head   = centre_sensor_locations(statistics_head)[0]
 
@@ -2049,6 +2077,7 @@ class Experiment():
         preds = {}
         signals = {}
         corr_saved_values = []
+        slope_saved_values = []
         t_saved_values = []
         z_saved_values = []
         z_confidences = []
@@ -2057,14 +2086,17 @@ class Experiment():
             preds[time] = []
             signals[time] = []
             for j in range(0,len(all_values_gfps[time])):
-                predictions = [all_values_gfps[time][j]]
-                meg_signal = [all_predictions_total[time][j]]
+                predictions = [all_values_gfps[time][j]]        # Gfps at each time
+                meg_signal = [all_predictions_total[time][j]]   # Predicted surprise value at each time (the same for every time)
                 for pred in predictions:
                     preds[time].append(pred)
                 for signal in meg_signal:
                     signals[time].append(signal)     
             corr = pearsonr(preds[time], signals[time])[0]
             corr_saved_values.append(corr)
+            # Other stats
+            slope, intercept, r_value, p_value, std_err = scipy.stats.linregress(preds[time], signals[time])
+            slope_saved_values.append(slope)
 
             n = len(preds[time])
             t_stat = corr_coeff_t_value(n=n,corr=corr)        
@@ -2077,28 +2109,32 @@ class Experiment():
             z = (z_observed-z_null) / math.sqrt(1/(n-3))
             z_saved_values.append(z)     
             
-            z_critical = st.norm.ppf(1 - CLUSTER_CUTOFF*0.5) # 1.96 at p=0.05
+            bonferroni_adjusted_cutoff = CLUSTER_CUTOFF / (4*13)
+            z_critical = st.norm.ppf(1 - bonferroni_adjusted_cutoff*0.5) # 1.96 at p=0.05
             z_confidence = [z_null-z_critical*math.sqrt(1/(n-3)),z_null+z_critical*math.sqrt(1/(n-3))]
             r_confidence = [fisher_z_to_r(z_confidence[0]), fisher_z_to_r(z_confidence[1])]
 
-            # print("Time: ",  time, " Correlation: ", corr, "z_obs", z_observed, " z score ", z)
+            print("Time: ",  time, " Correlation: ", corr, "z_obs", z_observed, " z score ", z)
             # print("t saved values ", t_saved_values)
             # print("z saved values ", z_saved_values)
             # print("Z confidence ", z_confidence)
-            # print("r confidence ", r_confidence)
+            print("r confidence ", r_confidence)
             z_confidences.append(z_confidence)
             r_confidences.append(r_confidence)
 
 
         plt.close('all')
         plt.clf()
-        plt.plot(all_times,corr_saved_values)
         if stat_to_use == 'corr':
-            plt.title("Correlation of predictor to GFP, "+waveform)
+            return_val = corr_saved_values
+            plt.plot(all_times,corr_saved_values)
+            plt.title("Correlation of predictor to GFP, "+waveform, fontsize=FONTSIZE_TITLE)
         if stat_to_use == 'slope':
-            plt.title("Slope of regression between predictor and GFP, "+waveform)        
-        plt.ylabel(stat_to_use) 
-        plt.xlabel("Time, ms")
+            return_val = slope_saved_values
+            plt.plot(all_times,slope_saved_values)            
+            plt.title("Slope of regression between predictor and GFP, "+waveform, fontsize=FONTSIZE_TITLE)        
+        plt.ylabel(stat_to_use, fontsize=FONTSIZE_LABELS) 
+        plt.xlabel("Time (ms)", fontsize=FONTSIZE_LABELS)
         
         timestring = str(int(self.participants[0].epochs_ransac_autoreject.times[0]*SEC_TO_MS+EPSILON_TIME))+ "-"+str(int(self.participants[0].epochs_ransac_autoreject.times[-1]*SEC_TO_MS+EPSILON_TIME))+"ms"
 
@@ -2109,9 +2145,9 @@ class Experiment():
                     bbox_inches='tight')    
         plt.show()       
     #     plt.plot(all_times,t_saved_values)
-    #     plt.title("t value of corr HGF_Vanilla PE2 to GFP, 20pct threshold, "+waveform)
-    #     plt.ylabel("t statistic") 
-    #     plt.xlabel("Time, ms")
+    #     plt.title("t value of corr HGF_Vanilla PE2 to GFP, 20pct threshold, "+waveform, fontsize=FONTSIZE_TITLE)
+    #     plt.ylabel("t statistic", fontsize=FONTSIZE_LABELS) 
+    #     plt.xlabel("Time (ms)", fontsize=FONTSIZE_LABELS)
     #     plt.show()    
         
 
@@ -2209,8 +2245,8 @@ class Experiment():
             np.array([new_X,zero_matrix]),
             n_jobs=1,
             #threshold=threshold,
-            adjacency=ch_adjacency,
-            n_permutations=N_PERMUTATIONS,
+            #adjacency=ch_adjacency,
+            n_permutations=N_PERMUTATIONS
             ) 
         print("P values...", p_values)
         good_cluster_inds = np.where(p_values < CLUSTER_CUTOFF)[0]
@@ -2264,8 +2300,11 @@ class Experiment():
             plt.colorbar(image, cax=ax_colorbar)
             xlabel = "Relationship between ERF and predictor at time  "
 
-            ax_topo.set_xlabel(xlabel+'({:0.3f} - {:0.3f} s)'.format(*sig_times[[0, -1]]))
-            ax_topo.set_ylabel(stat_to_use)
+            ax_topo.set_xlabel(xlabel+'({:0.3f} - {:0.3f} s)'.format(*sig_times[[0, -1]]), fontsize=FONTSIZE_LABELS)
+            if stat_to_use == 'corr':
+                ax_topo.set_ylabel("Correlation", fontsize=FONTSIZE_LABELS)
+            else:
+                ax_topo.set_ylabel(stat_to_use, fontsize=FONTSIZE_LABELS)
             
             # add new axis for time courses and plot time courses
             ax_signals = divider.append_axes('right', size='300%', pad=1.2)
@@ -2308,6 +2347,8 @@ class Experiment():
                         bbox_inches='tight')    
             with open(filename+' Chans.txt', 'w') as f:
                 f.write(str(["MEG "+str(ch_ind+1).zfill(3) for ch_ind in ch_inds]))
+
+        return return_val
 
     def adjust_adult_head_info(self):
 
@@ -2584,9 +2625,9 @@ class Experiment():
             #gfp_diff_conditions_df = pd.DataFrame([self.grand_average_cond_B_df['time'].values,gfp_diff_conditions],columns=['time','GFP_DIFF']  
             gfp_diff_conditions_df = pd.DataFrame({'time': self.grand_average_cond_A_df['time'].values, 'GFP_COND_(B-A)': gfp_diff_conditions})
             plt.plot(times,gfp_diff_conditions)
-            plt.xlabel("time (ms)")
-            #plt.ylabel("GFP diff "+str(graph_y_label))
-            plt.title("Condition B (high surprise) minus Condition A (low surprise) RMS")
+            plt.xlabel("Time (ms)", fontsize=FONTSIZE_LABELS)
+            #plt.ylabel("GFP diff "+str(graph_y_label), fontsize=FONTSIZE_LABELS)
+            plt.title("High surprise RMS minus low surprise RMS", fontsize=FONTSIZE_TITLE)
             plt.show()
 
 
@@ -2615,21 +2656,21 @@ class Experiment():
             # make a plot
             ax.plot(df_gfps_conditions['time'].values, df_gfps_conditions['GFP CondA'].values, label='GFP Condition A', color="red") # ,marker="o"
             ax.plot(df_gfps_conditions['time'].values, df_gfps_conditions['GFP CondB'].values, label='GFP Condition B', color="blue" )
-            ax.legend(loc=2)
+            ax.legend(loc=2, fontsize=FONTSIZE_LEGEND)
             # set x-axis label
-            ax.set_xlabel("Time, ms",   fontsize=FONTSIZE_LABELS)
+            ax.set_xlabel("Time (ms)",   fontsize=FONTSIZE_LABELS)
             # set y-axis label
-            ax.set_ylabel("GFP, T",     fontsize=FONTSIZE_LABELS) # color="red",
+            ax.set_ylabel("GFP (T)",     fontsize=FONTSIZE_LABELS) # color="red",
 
             # twin object for two different y-axis on the sample plot
             ax2=ax.twinx()
             # make a plot with different y-axis using second axis object
             ax2.plot(df_gfps_conditions['time'].values, df_gfps_conditions['GFP CondB-A'].values, label='GFP CondB-A', color="green")
-            ax2.legend(loc=1)
+            ax2.legend(loc=1, fontsize=FONTSIZE_LEGEND)
             ax2.set_ylabel("GFP of [Grand avg Condition B minus A]",color="green",fontsize=FONTSIZE_LABELS)
 
-            #plt.legend([("GFP Condition A "), ("GFP Condition B "), ("GFP Condition B minus Condition A")])
-            plt.title("GFP vs time for different conditions")
+            #plt.legend([("GFP Condition A "), ("GFP Condition B "), ("GFP Condition B minus Condition A")], fontsize=FONTSIZE_LEGEND)
+            plt.title("GFP for different conditions", fontsize=FONTSIZE_TITLE)
 
 
             # save the plot as a file
@@ -2641,10 +2682,10 @@ class Experiment():
 
             # Plot condition differences only
             plt.plot(df_gfps_conditions['time'].values, [df_gfps_conditions['GFP CondB'].values[x] - df_gfps_conditions['GFP CondA'].values[x] for x in range(0,len(df_gfps_conditions['GFP CondA'].values))])
-            plt.title("GFP vs time of (Grand avg of) Condition B minus A", fontsize=FONTSIZE_TITLE)
-            plt.ylabel("GFP difference, T", fontsize=FONTSIZE_LABELS)
-            plt.xlabel("Time, ms", fontsize=FONTSIZE_LABELS)
-            plt.legend(["GFP Cond B minus GFP Cond A (vs time)"])
+            plt.title("GFP of (Grand avg of) Condition B minus A", fontsize=FONTSIZE_TITLE)
+            plt.ylabel("GFP difference (T)", fontsize=FONTSIZE_LABELS)
+            plt.xlabel("Time (ms)", fontsize=FONTSIZE_LABELS)
+            plt.legend(["GFP Cond B minus GFP Cond A"], fontsize=FONTSIZE_LEGEND)
             plt.savefig('GFP vs condition, differences '+timestring+'.jpg', dpi=DPI)
             plt.clf()
 
@@ -2691,7 +2732,7 @@ class Experiment():
             self.save_gfp_diff_ages(size_age_bucket_percent=20,override_filename=str(age_bounds_low)+str(age_bounds_high))
             df_gfps_group_custom = self.export_group(size_age_bucket_percent=20)
             str_ = str(age_bounds_low)+" and "+str(age_bounds_high)
-            df_gfps_group_custom.to_csv("GFP Group ages "+str_+timestring+'.csv',index=False)      
+            df_gfps_group_custom.to_csv("GFP Group ages "+str_+' '+timestring+'.csv',index=False)      
 
 
 
@@ -2700,10 +2741,10 @@ class Experiment():
             plt.plot(df_gfps_group_10['time'].values, df_gfps_group_10['GFP Group B Both'].values)
             plt.plot(df_gfps_group_20['time'].values, df_gfps_group_20['GFP Group A Both'].values)
             plt.plot(df_gfps_group_20['time'].values, df_gfps_group_20['GFP Group B Both'].values)
-            plt.legend(["Youngest "+str(percentiles[0])+ "%", "Oldest "+str(percentiles[0])+ " %", "Youngest "+str(percentiles[1])+ " %", "Oldest "+str(percentiles[1])+ "%",])
-            plt.title("GFP vs time for different age groups", fontsize=FONTSIZE_TITLE)
-            plt.ylabel("GFP, T", fontsize=FONTSIZE_LABELS)
-            plt.xlabel("Time, ms", fontsize=FONTSIZE_LABELS)
+            plt.legend(["Youngest "+str(percentiles[0])+ "%", "Oldest "+str(percentiles[0])+ " %", "Youngest "+str(percentiles[1])+ " %", "Oldest "+str(percentiles[1])+ "%",], fontsize=FONTSIZE_LEGEND)
+            plt.title("GFP for different age groups", fontsize=FONTSIZE_TITLE)
+            plt.ylabel("GFP (T)", fontsize=FONTSIZE_LABELS)
+            plt.xlabel("Time (ms)", fontsize=FONTSIZE_LABELS)
             plt.savefig('GFP vs age '+timestring+'.jpg', dpi=DPI)
             # Image.open('testplot.png').save('testplot.jpg','JPEG')  
             plt.clf()
@@ -2712,10 +2753,10 @@ class Experiment():
             # Plot oldest vs youngest differences
             plt.plot(df_gfps_group_10['time'].values, [df_gfps_group_10['GFP Group A Both'].values[x] - df_gfps_group_10['GFP Group B Both'].values[x] for x in range(0,len(df_gfps_group_10['GFP Group B Both'].values))])
             plt.plot(df_gfps_group_20['time'].values, [df_gfps_group_20['GFP Group A Both'].values[x] - df_gfps_group_20['GFP Group B Both'].values[x] for x in range(0,len(df_gfps_group_20['GFP Group B Both'].values))])
-            plt.legend(["Youngest "+str(percentiles[0])+ " % minus oldest "+str(percentiles[0])+ "%",  "Youngest "+str(percentiles[1])+ " % minus oldest "+str(percentiles[1])+ "%"], loc=1)
-            plt.title("GFP vs time of (Grand avg of) youngest minus oldest", fontsize=FONTSIZE_TITLE)
-            plt.ylabel("GFP difference, T",fontsize=FONTSIZE_LABELS)
-            plt.xlabel("Time, ms", fontsize=FONTSIZE_LABELS)
+            plt.legend(["Youngest "+str(percentiles[0])+ " % minus oldest "+str(percentiles[0])+ "%",  "Youngest "+str(percentiles[1])+ " % minus oldest "+str(percentiles[1])+ "%"], loc=1, fontsize=FONTSIZE_LEGEND)
+            plt.title("GFP of (Grand avg of) youngest minus oldest", fontsize=FONTSIZE_TITLE)
+            plt.ylabel("GFP difference (T)",fontsize=FONTSIZE_LABELS)
+            plt.xlabel("Time (ms)", fontsize=FONTSIZE_LABELS)
             plt.savefig('GFP vs age, differences '+timestring+'.jpg', dpi=DPI)
             # Image.open('testplot.png').save('testplot.jpg','JPEG')  
             plt.clf()
@@ -2724,10 +2765,10 @@ class Experiment():
             # Plot custom age groups together
             plt.plot(df_gfps_group_custom['time'].values, df_gfps_group_custom['GFP Group A Both'].values)
             plt.plot(df_gfps_group_custom['time'].values, df_gfps_group_custom['GFP Group B Both'].values)
-            plt.legend(["Age group " +str(age_bounds_low), "Age group "+str(age_bounds_high) ])
-            plt.title("GFP vs time for (Grand avg of) two different age groups", fontsize=FONTSIZE_TITLE)
-            plt.ylabel("GFP, T", fontsize=FONTSIZE_LABELS)
-            plt.xlabel("Time, ms", fontsize=FONTSIZE_LABELS)
+            plt.legend(["Age group " +str(age_bounds_low), "Age group "+str(age_bounds_high) ], fontsize=FONTSIZE_LEGEND)
+            plt.title("GFP for (Grand avg of) two different age groups", fontsize=FONTSIZE_TITLE)
+            plt.ylabel("GFP (T)", fontsize=FONTSIZE_LABELS)
+            plt.xlabel("Time (ms)", fontsize=FONTSIZE_LABELS)
             plt.savefig('GFP vs age '+timestring+'.jpg', dpi=DPI)
             # Image.open('testplot.png').save('testplot.jpg','JPEG')  
             plt.clf()
@@ -2735,10 +2776,10 @@ class Experiment():
 
             # Plot custom age groups differences only
             plt.plot(df_gfps_group_custom['time'].values, [df_gfps_group_custom['GFP Group A Both'].values[x] - df_gfps_group_custom['GFP Group B Both'].values[x] for x in range(0,len(df_gfps_group_custom['GFP Group B Both'].values))])
-            plt.legend(["Age group " +str(age_bounds_low) + " minus age group "+str(age_bounds_high)], loc=1)
-            plt.title("GFP vs time for (Grand avg of) two different age groups", fontsize=FONTSIZE_TITLE)
-            plt.ylabel("GFP difference, T",fontsize=FONTSIZE_LABELS)
-            plt.xlabel("Time, ms", fontsize=FONTSIZE_LABELS)
+            plt.legend(["Age group " +str(age_bounds_low) + " minus age group "+str(age_bounds_high)], loc=1, fontsize=FONTSIZE_LEGEND)
+            plt.title("GFP for (Grand avg of) two different age groups", fontsize=FONTSIZE_TITLE)
+            plt.ylabel("GFP difference (T)",fontsize=FONTSIZE_LABELS)
+            plt.xlabel("Time (ms)", fontsize=FONTSIZE_LABELS)
             plt.savefig('GFP vs age '+str_+', differences '+timestring+'.jpg', dpi=DPI)
             # Image.open('testplot.png').save('testplot.jpg','JPEG')          
             plt.clf()
@@ -2757,15 +2798,15 @@ class Experiment():
             
 
             
-            method_dct = self.return_method_dct('USE_RAW_HIGH_SURPRISE')
-            assert method_dct['USE_RAW_HIGH_SURPRISE']+method_dct['USE_RAW_LOW_SURPRISE']+method_dct['USE_ALL_TRIALS'] == 1, "Can only choose one option"
+            method_dct = self.return_method_dct('on high surprise trials')
+            assert method_dct['on high surprise trials']+method_dct['on low surprise trials']+method_dct['on all trials'] == 1, "Can only choose one option"
             waveform = self.return_waveform_str(method_dct)
             print("Waveform to analyse :", waveform)           
             self.statistical_head_spatio_temporal(method_dct,waveform,stat_to_use='corr') 
             self.statistical_head_spatio_temporal(method_dct,waveform,stat_to_use='slope') 
            
-            method_dct = self.return_method_dct('USE_RAW_LOW_SURPRISE')
-            assert method_dct['USE_RAW_HIGH_SURPRISE']+method_dct['USE_RAW_LOW_SURPRISE']+method_dct['USE_ALL_TRIALS'] == 1, "Can only choose one option"
+            method_dct = self.return_method_dct('on low surprise trials')
+            assert method_dct['on high surprise trials']+method_dct['on low surprise trials']+method_dct['on all trials'] == 1, "Can only choose one option"
             waveform = self.return_waveform_str(method_dct)
             print("Waveform to analyse :", waveform)        
             
@@ -2857,7 +2898,7 @@ class Experiment():
 
 
     def setup_to_run(self):                   
-        self.EXP_BASE          = r'E:\BigData\MEG\MRES\ME125_MMN_phase1_Yanan\Experiments\\'
+        self.EXP_BASE          = SAVE_DIR # r'E:\BigData\MEG\MRES\ME125_MMN_phase1_Yanan\Experiments\\'
         os.chdir(self.EXP_BASE)
         self.child_participant_strings, self.adult_participant_strings = set_up_participants() # > set_up_participants found in experiment.py
         print("Number children", len(self.child_participant_strings), "Number adults ", len(self.adult_participant_strings))
