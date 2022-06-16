@@ -1,3 +1,4 @@
+import helpers
 from helpers import *
 from config import *
 from participant_data import *
@@ -40,7 +41,9 @@ import inspect
 CLUSTER_CUTOFF             = 0.05 # p-value cutoff
 
 
-
+# 20% of 1730 trials in each participant, for 72 participants
+print(0.2*1730*72)
+# Actual number was 24545 when I ran the whole pipeline
 n = 24545
 z_null = 0
 z_critical = st.norm.ppf(1 - CLUSTER_CUTOFF*0.5) # 1.96 at p=0.05
@@ -50,8 +53,12 @@ print(z_confidence)
 r_confidence = [fisher_z_to_r(z_confidence[0]), fisher_z_to_r(z_confidence[1])]
 print(r_confidence)
 
+
+
+
+
 #Bonferroni adjustment:
-CLUSTER_CUTOFF = CLUSTER_CUTOFF/2 / (4*13)
+CLUSTER_CUTOFF = CLUSTER_CUTOFF / (4*13)
 z_critical = st.norm.ppf(1 - CLUSTER_CUTOFF*0.5) # 1.96 at p=0.05
 z_confidence = [z_null-z_critical*math.sqrt(1/(n-3)),z_null+z_critical*math.sqrt(1/(n-3))]
 print(z_confidence)
