@@ -112,7 +112,7 @@ function c = tapas_hgf_whatworld_config
 c = struct;
 
 % Model name
-c.model = 'hgf_whatworld';
+c.model = 'hgf_whatworld_mod';
 
 % Number of states
 c.n_states = 7;
