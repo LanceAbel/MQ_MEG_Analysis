@@ -6,16 +6,6 @@
 NUM_TONES_LONG = 1384 % Length of predictor array to generate
 
 
-% Modification to HGF Model - see  See Scale_Prediction_Error.xlsx  ('Model 2' tab at bottom) for explanation 
-RUN_MODIFIED_MODEL_HACK = false % hacks in an adjustment to the PE2 based on the size of the change in tone frequency 
-if RUN_MODIFIED_MODEL_HACK
-    MULTIPLIER_MODEL = [0.00	1.00	1.5	   1.83	   2.08	   2.28	    2.45]
-    CONSTANT_MODEL = max(MULTIPLIER_MODEL)
-    POWER_MODEL = 0.5
-    CAP_MODEL = 0.5
-    END_MULTIPLIER_MODEL = 1.25 % Necessary end-step multiplication to on average not add or subtract from the PE2 based on how much the tone frequency has changed
-end
-
 
 
 windows_machine = ispc
@@ -264,25 +254,8 @@ end
 % 
 %            stim_before  = est_tones_hgf_whatworld.u_orig(i-1);
 %            stim         = est_tones_hgf_whatworld.u_orig(i);
-% 
-%            if RUN_MODIFIED_MODEL_HACK == true
-%                % Expect surprise to be proportional to the (log of) the simple change in tone frequency (this assumes equal perceptual spacing in Hz). % Using gap in number of categories for simplicity (not in Hz)
-%                lookup_1 = MULTIPLIER_MODEL(stim);           % Scales by how much the frequency has changed by 
-%                lookup_2 = MULTIPLIER_MODEL(stim_before);    % Scales by how much the frequency has changed by     
-%                gap = lookup_1-lookup_2;
-%                intermediate = log(max(CAP_MODEL,abs(gap))/CONSTANT_MODEL); 
-%                if isinf(intermediate)
-%                     intermediate = -2;
-%                end
-%                scaled_change_in_tone = intermediate + 2;
-%                scaled_change_in_tone_power = scaled_change_in_tone.^POWER_MODEL;
-%                scaled_change_in_tone_power = scaled_change_in_tone_power * END_MULTIPLIER_MODEL;
-%                PE2(i)       = (est_tones_hgf_whatworld.traj.da(i-1,1,stim,stim_before))*scaled_change_in_tone_power; 
-%                PWPE2(i) = (est_tones_hgf_whatworld.traj.epsi(i-1,2,stim,stim_before))*scaled_change_in_tone_power;  
-%            else
-%                PE2(i)       = (est_tones_hgf_whatworld.traj.da(i-1,1,stim,stim_before));
-%                PWPE2(i) = (est_tones_hgf_whatworld.traj.epsi(i-1,2,stim,stim_before));  
-%            end
+%            PE2(i)       = (est_tones_hgf_whatworld.traj.da(i-1,1,stim,stim_before));
+%            PWPE2(i) = (est_tones_hgf_whatworld.traj.epsi(i-1,2,stim,stim_before));  
 %            PE3(i)       = sum(est_tones_hgf_whatworld.traj.da(i-1,2,stim_before,:),'omitnan');
 %            PWPE3(i) = sum(est_tones_hgf_whatworld.traj.epsi(i-1,3,stim_before,:),'omitnan');   
 %         end
