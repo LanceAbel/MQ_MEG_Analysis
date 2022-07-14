@@ -92,11 +92,11 @@ print("%s adult system, strings: %s"%(str(len(adult_participant_strings)), str(a
 
 
 # # Add participants to the experiment by running pipeline
-OLDFILE_CUTOFF_DAYS = 0.001 # Only run the pipeline if the saved file was created > this many days ago. Useful for re-running analysis on all participants after a change
-file_num_start  = 0
-file_num_end    = 12
-child_participant_strings = ['2629'] # sorted(child_participant_strings[min(len(child_participant_strings),file_num_start):min(len(child_participant_strings),file_num_end)],reverse=True)
-adult_participant_strings = ['2552'] # sorted(adult_participant_strings[min(len(adult_participant_strings),file_num_start):min(len(adult_participant_strings),file_num_end)],reverse=True)
+OLDFILE_CUTOFF_DAYS = 1 # Only run the pipeline if the saved file was created > this many days ago. Useful for re-running analysis on all participants after a change
+file_num_start  = 30
+file_num_end    = 40
+child_participant_strings = sorted(child_participant_strings[min(len(child_participant_strings),file_num_start):min(len(child_participant_strings),file_num_end)],reverse=True)
+adult_participant_strings = []#sorted(adult_participant_strings[min(len(adult_participant_strings),file_num_start):min(len(adult_participant_strings),file_num_end)],reverse=True)
 
 # Add participants to the experiment by running pipeline
 children_additions = {"successful": [], "errors": []}
@@ -147,7 +147,7 @@ for adult_string in adult_participant_strings:
             gc.collect()
             clear_output()
             print("Warnings were: ", ptcp.warnings)
-            all_warnings.append(ptcp.warnings)
+            all_warnings.append([ptcp.p_id,ptcp.warnings])
     except Exception as e:
         print("############## PROBLEMS ADDING ADULT ###############")
         print(adult_string, e)
@@ -189,7 +189,7 @@ for child_string in child_participant_strings:
             gc.collect()
             clear_output()
             print("Warnings were: ", ptcp.warnings)
-            all_warnings.append(ptcp.warnings)
+            all_warnings.append([ptcp.p_id,ptcp.warnings])
     except Exception as e:
         print("############## PROBLEMS ADDING CHILD ###############")
         print(child_string, e)
@@ -204,7 +204,7 @@ print(children_additions)
 print(adult_additions)
 
 print("\n")
-print("Exceptions: ", exception_log)
+print("Exceptions: ", exception_log, "\n")
 print(time.time(), "Took ", (time.time()-START_NOTEBOOK_TIME)/60, " Minutes")
 
 
