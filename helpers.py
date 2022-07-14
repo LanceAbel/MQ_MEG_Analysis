@@ -11,10 +11,37 @@ import matplotlib.pyplot as plt
 from matplotlib.pyplot import figure
 
 
+# ## Option A
+import matplotlib 
+matplotlib.rc('font', family='sans-serif') 
+matplotlib.rc('font', serif='Times New Roman') 
+matplotlib.rc('text', usetex='False') 
+matplotlib.rcParams.update({'font.sans-serif':'Times New Roman'})
+# Only show ticks on the left and bottom spines
+matplotlib.rcParams["axes.spines.right"] = False
+matplotlib.rcParams["axes.spines.top"] = False
+
+
+
+import matplotlib.pyplot as plt
+# Example 1
+# x=[1,2,3,4,5] # x vals to plot
+# y=[2,1,3,5,4] # y vals to plot
+# x_ticks         = [0,3,6]   # Values to display on x axis
+# x_ticks_labels  = [0,2,4,6]         # Values to display ticks at on x axis
+# fig=plt.figure()
+# ax=fig.add_subplot(111)
+# ax.plot(x, y, 'r', linewidth=2, label = "Tmp")  # plt.
+# #ax.set_xticks(x_ticks) 
+# #ax.set_xticklabels(x_ticks, fontsize=14, fontname="Times New Roman")   
+# ax.set_xlim(xmin=min(x_ticks),xmax=max(x_ticks)) #left = xticks[0])   # Makes first x tick start at origin 
+# plt.show()
+
+
+
 
 
 #OS   
-
 def cpu_used(time_interval_secs=None):
     '''Returns fraction of CPU used over a timeframe'''
     return psutil.cpu_percent(time_interval_secs)
@@ -222,60 +249,255 @@ def r_confidence(p_cutoff, n):
     return r_confidence
 
 
+def rounder_for_corr_graphing(number):
+    '''Rounder for corr values
+    Round max to 2dp
+    '''
+    number_ = number * 1000
+    if number_ >= 0:
+        number_ = (number_ // 10 ) * 10 if number_%10 == 0 else (number_ // 10 + 1 ) * 10
+    else:
+        number_ = (number_ // 10 ) * 10   
+    number_ = number_ / 1000
+    return number_
 
-def compare_corrs_to_threshold(times,line1,line2,threshold_line,y_min,y_max,ylabel='Correlation', filename = "Plot 2 lines.jpg"):
-    plt.ylim([y_min,y_max])    
-    plt.xlim([min(times),max(times)])
+# Tests
+# print(rounder_for_corr_graphing(0.155))
+# print(rounder_for_corr_graphing(0.153))
+# print(rounder_for_corr_graphing(0.15))
+# print(rounder_for_corr_graphing(0.0))
+# print(rounder_for_corr_graphing(1.0))
+# print(rounder_for_corr_graphing(-0.155))
+# print(rounder_for_corr_graphing(-0.153))
+# print(rounder_for_corr_graphing(-0.15))
+
+
+def plot_module(xs, ys, xlabel, ylabel, title, font_object,
+                xticklabels = [], yticklabels = [], legends=[], colours = [],
+                x_min_to_show=None, x_max_to_show=None, y_min_to_show=None, y_max_to_show=None,
+                fontsize_title = 18, fontsize_labels = 14, fontsize_legend = 13, fontname = "Times New Roman", padding = 2):
+    
+    '''Plotting module containing some of the features I wanted
+    ys are the values to plot on the same graph
+    xs are the x axis values associated with these
+    colours are the colours in which the ys will be plotted
+    legends is a list used for labelling the ys (in the legend)
+    xlabel is for naming the x axis
+    ylabel is for naming the y axis
+    x_min_to_show sets the smallest x value that is labelled (at the origin)
+    x_max_to_show sets the largest x value that is labelled (at far right on x axis)
+    padding creates some space between the axes' labels and the axes' names
+    '''
+
+    # Plot custom age groups differences only
+    # Plot custom age groups together
+    fig=plt.figure()
+    ax=fig.add_subplot(111)
+    assert len(xs)==len(ys), "Mismatch between xs and ys to plot"
+    # if legends!=[]:
+    #     assert len(ys)==len(legends), "Mismatch between ys and legends to plot"
+
+    r = 0
+    if legends!=[]:
+        for x_ in xs:
+            ax.plot(xs[r], ys[r], label = legends[r])
+            r+=1
+    else:
+        for x_ in xs:
+            ax.plot(xs[r], ys[r])
+            r+=1
+
+    ax.yaxis.set_ticks_position('left')
+    ax.xaxis.set_ticks_position('bottom')
+    FONTSIZE_AXES, padding = 14, 0.2
+    if yticklabels!=[]:
+        ax.set_yticklabels(yticklabels,fontsize=FONTSIZE_AXES)
+        ax.set_yticks(yticklabels)  
+    if xticklabels!=[]:
+        ax.set_xticklabels(xticklabels,fontsize=FONTSIZE_AXES)
+        ax.set_xticks(xticklabels)  
+    if y_min_to_show and y_max_to_show:
+        ax.set_ylim(ymin=y_min_to_show,ymax=y_max_to_show)      # Makes first y tick start at origin 
+    if x_min_to_show and x_max_to_show:
+        ax.set_xlim(xmin=x_min_to_show,xmax=x_max_to_show)      # Makes first x tick start at origin 
+
+    ax.set_xlabel(xlabel, fontsize=fontsize_labels, labelpad=padding, fontname=fontname)  
+    ax.set_ylabel(ylabel, fontsize=fontsize_labels, labelpad=padding, fontname=fontname)    
+    if legends!=[]:
+        ax.legend(loc='best', fontsize=fontsize_legend, bbox_to_anchor=(1, 0.5), prop=font_object )
+    plt.title(title, fontsize=fontsize_title)
+    return plt    
+
+
+x_ticks = [30,35,40,45,50]
+y_ticks = [0,30,60,90,120]
+PLOT_START, PLOT_END = 0.13, 0.19
+SEC_TO_MS = 1000
+y_min = 0
+y_max = 120
+fnt = font_manager.FontProperties(family='Times New Roman',
+                                               style='normal', size=12)
+plot = plot_module(xs = [x_ticks,x_ticks,x_ticks,x_ticks],
+                                ys = [[1,2,3,4,5],
+                                        [11,22,33,44,55],
+                                        [21,32,43,54,65],
+                                        [31,42,53,64,75]],
+                                xlabel = "Time (ms)", ylabel="GFP (T)",
+                                legends=["Youngest "+str(5)+ "%",
+                                        "Oldest "+str(7)+ " %",
+                                        "Youngest "+str(9)+ " %",
+                                        "Oldest "+str(10)+ "%"],
+                                title="GFP for different age groups",
+                                font_object = fnt,
+                                xticklabels = x_ticks,
+                                yticklabels = y_ticks,
+                                colours = [], # 
+                                x_min_to_show = PLOT_START*SEC_TO_MS,
+                                x_max_to_show = PLOT_END*SEC_TO_MS,                                  
+                                #x_min_to_show = EPOCH_START_ANALYSIS*SEC_TO_MS,
+                                #x_max_to_show = EPOCH_END_ANALYSIS*SEC_TO_MS,
+                                y_min_to_show = y_min,
+                                y_max_to_show = y_max                                                             
+                                )
+
+plot.show()
+
+
+def compare_corrs_to_threshold(times,line1,line2,threshold_line,y_min,y_max,ylabel='Correlation', filename = "Plot 2 lines Test.jpg"):
+    # Dataframe
+    df = pd.DataFrame({'time': times, ylabel+"_1" : line1, ylabel+"_2" : line2, "Threshold" : threshold_line})
+    #df.to_csv(filename.replace(".jpg",".csv"))    
+
+    # Figure
+    fig=plt.figure()
+    ax=fig.add_subplot(111)
+    from matplotlib.ticker import FormatStrFormatter
+
+    #Uncomment to run py by itself
+    FONTSIZE_TITLE  = 18
+    FONTSIZE_LABELS = 14 # 17  # Title on x and y axis
+    FONTSIZE_AXES   = 14 # 16  # Values on x and y axes
+    FONTSIZE_LEGEND = 12 # 13  # Legend
+    PADDING         = 10  # Space between axis values and axis label
+    DPI             = 600     # Plot quality    
+    EPOCH_START_ANALYSIS    = 0.13
+    EPOCH_END_ANALYSIS      = 0.19
+    SEC_TO_MS = 1000
+
+
+    # all_fonts = {'fontname':'Comic Sans'}
+    # from matplotlib import rc
+    # rc('font',**{'family':'serif','serif':['Times']})
+    # rc('text', usetex=True)
+    font = font_manager.FontProperties(family='Times New Roman',
+                                       #weight='bold',
+                                       style='normal', size=FONTSIZE_LEGEND)
+
+    plt.title(ylabel + "s vs significance threshold", fontsize=FONTSIZE_TITLE, fontname="Times New Roman")
+
+
+    # Ticks
+    # x
     x_ticks = times
-    y_ticks = np.array([y_min+(y_max-y_min)*r/4 for r in range(0,5)])
-    
-    plt.yticks(np.arange(y_min, y_max, (y_max-y_min)/4), fontsize=FONTSIZE_AXES)
+    # y
+    NUM_TICKS = 5     
+    y_min = min(0,y_min)
+    y_max = max(0,y_max)
+    y_min = rounder_for_corr_graphing(y_min)
+    y_max = rounder_for_corr_graphing(y_max)
 
-    plt.ylabel(ylabel, fontsize=FONTSIZE_LABELS, labelpad=PADDING)      
-    plt.xlabel("Time (ms)", fontsize=FONTSIZE_LABELS, labelpad=PADDING)  
-    plt.title(ylabel + " vs significance threshold", fontsize=FONTSIZE_TITLE)
+    y_ticks = np.array([y_min+(y_max-y_min)*(r)/(NUM_TICKS-1) for r in range(0,NUM_TICKS)])
+    x_tick_vals = np.array([int(min(times)+(max(times)-min(times))*r/(NUM_TICKS-1)) for r in range(0,NUM_TICKS)])
+    #print(x_tick_vals,y_ticks)
+
+
+    ax.plot(x_ticks, threshold_line, 'g:', linewidth=1, label="Significance threshold") # plt.
+    ax.plot(x_ticks, line2, 'b', linewidth=3, label = "High surprise trials PWPE2")  # plt.
+    ax.plot(x_ticks, line1, 'r', linewidth=3, label = "High surprise trials PE3")  # plt.
+    #ax.plot(x_ticks, [0 for x in range(0,len(line1))], 'r', linewidth=3, label = "Zero point")  # plt.
+
+
+    ax.set_yticklabels(y_ticks, fontsize=FONTSIZE_AXES, fontname="Times New Roman")
+    #ax.set_ylim([y_min,y_max])    
+    plt.ylim([y_min,y_max])       
+    ax.set_yticks(y_ticks)
+    #plt.yticks(np.arange(y_min, y_max, (y_max-y_min)/(NUM_TICKS-1)), fontsize=FONTSIZE_AXES)
+    #plt.ylabel(ylabel, fontsize=FONTSIZE_LABELS)#, labelpad=PADDING)
+    ax.set_ylabel(ylabel, fontsize=FONTSIZE_LABELS, labelpad=PADDING, fontname="Times New Roman")    
+
+     
     
-    plt.yticks(fontsize=FONTSIZE_AXES)
-    plt.xticks(fontsize=FONTSIZE_AXES, rotation=90)    
+    ax.set_xticklabels(x_tick_vals, fontsize=FONTSIZE_AXES, fontname="Times New Roman")   
+    ax.set_xticks(x_tick_vals)  #[0,1,2,3,4]) 
+    ax.set_xlim(xmin=times[0],xmax=times[-1])   
+    plt.xlim([min(times),max(times)])       
+    #plt.xticks(times, fontsize=FONTSIZE_AXES, rotation=90)
+    #plt.xlabel('Time (ms)', fontsize=FONTSIZE_LABELS)#, labelpad=PADDING)  
+    ax.set_xlabel('Time (ms)', fontsize=FONTSIZE_LABELS, labelpad=PADDING, fontname="Times New Roman")  
+    #n = 2  # Keeps every 2nd label
+    #[l.set_visible(False) for (i,l) in enumerate(ax.xaxis.get_ticklabels()) if i % n != 0]
     
-    plt.plot(x_ticks, threshold_line, 'g:', linewidth=1, label="Significance threshold")
-    plt.plot(x_ticks, line2, 'b', linewidth=3, label = "High surprise trials")  
-    plt.plot(x_ticks, line1, 'r', linewidth=3, label = "Low surprise trials") 
-    
-    
-    plt.legend(loc='upper right', frameon=False, fontsize=FONTSIZE_LEGEND)
-    
-    plt.savefig(filename, dpi=DPI)
+
+    #plt.legend(loc='best', frameon=False, fontsize=FONTSIZE_LEGEND, bbox_to_anchor=(1, 0.5))
+    ax.legend(frameon=False, fontsize=FONTSIZE_LEGEND, prop=font, loc='best')#bbox_to_anchor=(1, 0.5)) # 
+    ax.yaxis.set_major_formatter(FormatStrFormatter('%.3f')) # 3 dp on y axis e.g. 0.025
+    plt.savefig(filename , bbox_inches='tight', dpi=DPI) # 
     plt.show()
-# # Running
-# corrs1f = ['{0:.3f}'.format(x) for x in corrs1]
-# corrs2f = ['{0:.3f}'.format(x) for x in corrs2]
-# threshold_linef = ['{0:.3f}'.format(x) for x in threshold_line]
-# corrs1f = [float(x) for x in corrs1f]
-# corrs2f = [float(x) for x in corrs2f]
-# threshold_linef = [float(x) for x in threshold_linef]
 
-# y_min = min(min(corrs1f),min(corrs2f))
-# y_max = (1+padding)*max(max(corrs1f),max(corrs2f))
-# y_min = (1+padding)*y_min if (y_min < 0 and y_max > 0) else (1-padding)*y_min
+    df_stats = pd.DataFrame({'time': times,
+                            'corr_1': line1,
+                            'corr_2': line2,
+                            }
+                            )
 
-# stat_to_use = 'corr'
-# filename = "Correlation vanilla PE2 to GFP.jpg"
-# plt.rcParams["figure.figsize"] = (8,5.5)
+    #df_stats.to_csv(filename.replace(".jpg",".csv"),index=False)      
 
-# if stat_to_use == 'corr':
-#     ylabel='Correlation'
-# elif stat_to_use == 'slope':
-#     ylabel = 'Slope'
-# if min(corrs1) < 0 and min(corrs2) <=0:
-#     threshold_line = [-x for x in threshold_line]
-#     compare_corrs_to_threshold(times, ylabel= ylabel, line1=corrs1f, line2=corrs2f, threshold_line=threshold_linef, y_min=y_min, y_max=y_max, filename=filename)    
-# elif min(corrs1) < 0 and min(corrs2) >=0:
-#     compare_corrs_to_threshold(times, ylabel= ylabel, line1=corrs1f, line2=corrs2f, threshold_line=threshold_linef, y_min=y_min, y_max=y_max, filename=filename)    
-#     threshold_line = [-x for x in threshold_line]
-#     compare_corrs_to_threshold(times, ylabel= ylabel, line1=corrs1f, line2=corrs2f, threshold_line=threshold_linef, y_min=y_min, y_max=y_max, filename=filename)    
-# else:
-#     compare_corrs_to_threshold(times, ylabel= ylabel, line1=corrs1f, line2=corrs2f, threshold_line=threshold_linef, y_min=y_min, y_max=y_max, filename=filename)        
+padding_graph = 0.0
+
+corrs1 = [0.069,0.065,0.068,0.061, 0.063, 0.06, 0.061, 0.064, 0.068,0.065, 0.067, 0.066,0.066]
+corrs2 = [0.001,-0.004,-0.001,0.002,0,0.001,0.003,0.01,0.003,-0.003,-0.004,-0.003,-0.007]
+y_min = 0 if min(min(corrs1),min(corrs2)) >= 0 else (1+padding_graph)*min(min(corrs1),min(corrs2))
+y_max = 0 if max(max(corrs1),max(corrs2)) <= 0 else (1+padding_graph)*max(max(corrs1),max(corrs2))
+compare_corrs_to_threshold(times=[130+5*x for x in range(0,13)], line1=corrs2,line2=corrs1,threshold_line = [0.021 for x in range(0,13)], y_min=y_min, y_max=y_max, ylabel='Correlation' )
+
+
+
+# print('%.2f'%(71.8573))
+
+
+
+# Example 2
+# x_1 = [130,150,170,190]
+# x_2 = [0,50,100,150,200,250,300]
+# y_1 = [-0.022,-0.033,0.04,0.055]
+# y_2 = [0.02,0.03,0.04,0.05,0.06,0.07,0.08]
+# z_1 = [0.12,0.13,0.14,0.161]
+# z_2 = [0.12,0.13,0.14,0.15,0.16,0.17,0.18]
+# thres_1 = [0.07,0.08,0.08,0.19]
+# thres_2 = [0.015,0.015,0.015,0.015,0.015,0.015,0.015]
+
+# y_min = 0 if min(min(y_1),min(z_1)) >= 0 else (1+padding_graph)*min(min(y_1),min(z_1))
+# y_max = 0 if max(max(y_1),max(z_1)) <= 0 else (1+padding_graph)*max(max(y_1),max(z_1))
+# #print(y_min,y_max)
+# #compare_corrs_to_threshold(x_1,y_1,z_1, threshold_line = thres_1, y_min=y_min, y_max=y_max, ylabel='Correlation', filename = "Plot 2 lines.jpg")
+# #compare_corrs_to_threshold(x_2,y_2,z_2, threshold_line = thres_2, y_min=y_min, y_max=y_max, ylabel='Correlation', filename = "Plot 2 lines.jpg")
+
+
+
+
+
+# Example 3
+# # Figure
+# fig=plt.figure()
+# ax=fig.add_subplot(111)
+# tst_x = [5,10,15,20,25]
+# tst_y = [1,2,3,4,5]
+# x_ticks = [0,5,10,15,20,25,30]
+# ax.plot(tst_x,tst_y,'r', linewidth=2, label = "Test")
+# ax.set_xlim(xmin=x_ticks[0],xmax=x_ticks[-1])   
+# plt.xlim([min(x_ticks),max(x_ticks)])  
+# plt.show()
+
 
 
 
@@ -313,6 +535,18 @@ def sum_df(df,mode='plain'):
                 df['sum'] = df['sum'] + df[col+'sq']
                 df = df.drop(col+'sq', 1)
     return df
+    
+
+def find_latency(df,df_gfp):
+    t = 0
+    max_gfp = -9999
+    max_gfp_latency = None
+    for time in df['time'].values:
+        if max_gfp <= df_gfp[t] and time < 200 and time >=40:
+            max_gfp = df_gfp[t]
+            max_gfp_latency = time
+        t+=1
+    return [max_gfp_latency, max_gfp]
 
 def avg_df(df,mode='plain'):
     df = sum_df(mode=mode)
@@ -486,6 +720,7 @@ def compare_two_corrs(r1,r2,n1,n2,critical_z = 1.96):
     '''
     
     z = (fisher_r_to_z(r1) -  fisher_r_to_z(r2))/math.sqrt((1/(n1-3)) + (1/(n2-3)))
+    print("Z score ", z)
     if z < -critical_z or z> critical_z:
         return True
     else:

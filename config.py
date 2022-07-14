@@ -8,6 +8,7 @@ import pandas as pd
 import scipy.io
 import math
 from matplotlib import pyplot as plt
+import matplotlib.font_manager as font_manager
 from autoreject import get_rejection_threshold
 from autoreject import Ransac
 from autoreject import (AutoReject, set_matplotlib_defaults)  # noqa
@@ -28,7 +29,7 @@ import scipy.stats as st
 
 BASE_FOLDER			= r'E:\BigData\MEG\MRES\ME125_MMN_phase1_Yanan\\' # Data root folder before \Adult & \Child
 SAVE_DIR			= BASE_FOLDER+'\ExperimentsNew\\' # Directory to save (processed) experimental data in
-
+#SAVE_DIR            = BASE_FOLDER+'\Experiments Final\\'
 from participant_data import *
 from helpers import *
 
@@ -37,20 +38,37 @@ LOGGING				       = True       # Each function will track key points, to identif
 STANDARDISE                = False      # Whether to standardise the ERF values or not
 
 #### CONFIG 1 - Stats parameters
-#Time window of analysis
+## Time windows
+# Data to keep
 EPOCH_START                = -0.1
 EPOCH_END                  = 0.3
-EPOCH_START_ANALYSIS       = 0.0       # The min latency at which we expect a MMR based on previous research (secs)
-EPOCH_END_ANALYSIS         = 0.295       # The max latency at which we expect a MMR based on previous research (secs)
-EPOCH_SIZE_MS              = 5
-NUM_BINS_SURPRISE          = 5          # x binsA, we divide the sample into the top and bottom 100%/x bins as high and low suirprise respectively. So 5 gives 0-20th and 80-100th percentiles of surprise
-SEC_TO_MS                  = 1000
+# Data to analyse
+EPOCH_START_ANALYSIS       = 0.005    # The min latency at which we expect a MMR based on previous research (secs)
+EPOCH_END_ANALYSIS         = 0.295     # The max latency at which we expect a MMR based on previous research (secs)
+assert EPOCH_START_ANALYSIS >= EPOCH_START, "Can only analyse time we have data for"
+assert EPOCH_END_ANALYSIS<=EPOCH_END, "Can only analyse time we have data for"
+#Override for plots; e.g. if plotting a segment of the analysed time
+PLOT_START                 = 0.005
+PLOT_END                   = 0.295
 EPSILON_TIME               = 0.01       # Extra bit added so that quantities rounded down map to the closest integer
 
-NUM_EPOCH_SAMPLES          = int((EPOCH_END_ANALYSIS-EPOCH_START_ANALYSIS)*1000 / EPOCH_SIZE_MS + 1) # Number of time samples in an epoch
+# Stat analysis choices
+EPOCH_SIZE_MS              = 5
 CLUSTER_CUTOFF             = 0.05       # p-value cutoff for all significance testing
 N_PERMUTATIONS             = 10000      # For permutation testing, how many permutations to test
 STAT_TO_USE                = 'corr'     # Which statistic to use when analysing relationship between the predictor and the GFP or ERF
+ # When splitting group into age < X  or age  > X , what to use for X
+AGE_CUTOFF                  = 10        
+# age_bounds_low              = [3,9]
+# age_bounds_high             = [10,16]
+age_bounds_low              = [3,5]   # [10,16]
+age_bounds_high             = [10,16]   # [22,70]
+PERCENTILES_AGE             = [10,20]   # When comparing bottom x% to top x% in age, use one of these
+NUM_BINS_SURPRISE           = 5        # x binsA, we divide the sample into the top and bottom 100%/x bins as high and low suirprise respectively. So 5 gives 0-20th and 80-100th percentiles of surprise
+CONT_PREDICTOR_USE_DIFF_CUTOFF  = True  # If True, will split the predicted surprise not into   >=x and <x ,  but into >=x and <=y where y!=x.
+                                        # This choice only matters for predictors that take on non-binary values
+                                        # To aid comparability between the HGF and deviants, set this to True
+
 
 
 
@@ -84,25 +102,22 @@ DOWNSAMPLE_FREQ            = 200        # What to downsample to
 LINE_FREQ                  = 50
 
 
- 
-AGE_CUTOFF					= 10        # When splitting group into age < X  or age  > X , what to use for X
+
+
 CUTOFF_FILE_NAMES			= 9000      # I (in 2022) started labelling new participants with IDs 9000 and above
 
 # Note: 2629 , 2687, 2695, 2632 have the opposite of MMN and a lot of HF noise. Certainly not excluding them because of this, just interesting to note.
 # Normal ones have lower GFP for deviant, the above have higher GFP for deviant
 
 
-CONT_PREDICTOR_USE_DIFF_CUTOFF  = True  # If True, will split the predicted surprise not into   >=x and <x ,  but into >=x and <=y where y!=x.
-                                        # This choice only matters for predictors that take on non-binary values
-                                        # To aid comparability between the HGF and deviants, set this to True
 
 ##### Choose predictor, definition of events
 # Which predictors we are assessing - pick one
 events_to_tag = {0: "frequencies",             # Choose a mode for which events we care about within participant data by setting its value to 1. Can change this later and continue running
                  
-                 0: "deviants", 1: "deviants_custom", 0: 'deviants_custom_combine', 0: "deviants_specific",
+                 0: "deviants", 0: "deviants_custom", 0: 'deviants_custom_combine', 0: "deviants_specific",
                  
-                 0: "hgf_pe2",   0: "hgf_pe2_mod_baked",    0: "hgf_pe2_mod",    
+                 1: "hgf_pe2",   0: "hgf_pe2_mod_baked",    0: "hgf_pe2_mod",    
                  0: "hgf_pwpe2", 0: "hgf_pwpe2_mod_baked",  # 0: "hgf_pwpe2_mod",   # Wasn't created
                  0: "hgf_pe3",   0: "hgf_pe3_mod_baked",    # 0: "hgf_pe3_mod",     # Wasn't created    
                  0: "hgf_pwpe3", 0: "hgf_pwpe3_mod_baked",  # 0: "hgf_pwpe3_mod",   # Wasn't created 
@@ -114,9 +129,9 @@ events_to_tag = {0: "frequencies",             # Choose a mode for which events 
 # New conditions to apply (if CHANGE_CONDITION==True)
 events_to_tag_rerun = {0: "frequencies",             
                  
-                 0: "deviants", 1: "deviants_custom", 0: 'deviants_custom_combine', 0: "deviants_specific",
+                 0: "deviants", 0: "deviants_custom", 0: 'deviants_custom_combine', 0: "deviants_specific",
                  
-                 0: "hgf_pe2",   0: "hgf_pe2_mod_baked",        0: "hgf_pe2_mod",
+                 1: "hgf_pe2",   0: "hgf_pe2_mod_baked",        0: "hgf_pe2_mod",
                  0: "hgf_pwpe2", 0: "hgf_pwpe2_mod_baked",      # 0: "hgf_pwpe2_mod",   # Wasn't created
                  0: "hgf_pe3",   0: "hgf_pe3_mod_baked",        # 0: "hgf_pe3_mod",     # Wasn't created    
                  0: "hgf_pwpe3", 0: "hgf_pwpe3_mod_baked",      # 0: "hgf_pwpe3_mod",   # Wasn't created 
@@ -141,13 +156,13 @@ conds_to_compare = {'frequencies': ['600', '700'], # Can change to e.g. 650 vs 8
                     'CS': ['81','82'],
                     'BS': ['91','92']
                    } # The labels of the event type that we care about. Can change this later and continue running
-
-
 HGF_TIMES                       = [str(346*x) for x in range(1,6)] + ['2000']  # The length of the sequences used to train various HGFs as predictors 
 RELEVANT_LENGTH_PREDICTOR       = HGF_TIMES[-1] # Time to use for main HGF tests...
 
 
 experiment_numbers = {"Adults": [1], "Children": [1]} # Not implemented yet, but will pick the experiment of interest when multiple recordings have been made from the same individuals
+
+
 
 
 
@@ -162,6 +177,8 @@ MAX_NUM_REPEATS            = 7                   # Number of timese each auditor
 ALL_TONE_FREQUENCIES       = [500+x*50 for x in range(0,NUM_TONES)]
 TONE_DURATION              = 0.07                # secs
 
+TRIGGER_EXCEPTIONS         = {}                  # Dictionary of exceptions to the rule of which one the MEG trigger (events) channel is. Haven't been able to auto-detect this.
+
 # Dictionary of exceptions to the rule of which one the audio channel is. Haven't been able to auto-detect this.
 SOUND_EXCEPTIONS           = {'3448': 183  # } 
                                 # Was 132 for these:
@@ -170,32 +187,30 @@ SOUND_EXCEPTIONS           = {'3448': 183  # }
                               }
 for lance_ptcp in [9000, 9001]: # + list(range(9002,9008)
     SOUND_EXCEPTIONS[str(lance_ptcp)] = 183
-    
-    
+
 SOUND_DELAY_1              = 0.044               # Backup sound delay for participants with ID < SOUND_DELAY_2_BEGINS
 SOUND_DELAY_2              = 0.244               # Backup sound delay for participants with ID >= SOUND_DELAY_2_BEGINS
 SOUND_DELAY_2_BEGINS       = 9000                # First participant ID to have the longer sound latency(SOUND_DELAY_2)
-
-TRIGGER_EXCEPTIONS         = {}                  # Dictionary of exceptions to the rule of which one the MEG trigger (events) channel is. Haven't been able to auto-detect this.
-
-
 
 
 
 is_adult = False
 # Only needed when running single participants
-stim_begin_adult = 194
-stim_begin_child = 146
+stim_begin_adult            = 194
+stim_begin_child            = 146
 # Needing when running experiment or group (adding in many participants)
-exp_num                     = 1
-num_meg_chs_adult           = 160                   # How many magnetometer channels will be found in MNE Raw if the system was KIT160 adult system
+
 num_meg_chs_child           = 125                   # How many magnetometer channels will be found in MNE Raw if the system was KIT160 child system
+num_meg_chs_adult           = 160                   # How many magnetometer channels will be found in MNE Raw if the system was KIT160 adult system
 num_chs_adult               = 257                   # How many will be found in MNE Raw if the system was KIT160 adult system
 num_chs_child               = 193                   # How many will be found in MNE Raw if the system was KIT160 child system
-print("Adult :", is_adult, "Experiment number: ", exp_num, " Number of channels on system adult: ", num_chs_adult-1, " Number of channels child: ", num_chs_child-1)
-audio_channel_adult         = 167                   # 167 (MISC 007)
 audio_channel_child         = 135                   # 135 (MISC 010)
+audio_channel_adult         = 167                   # 167 (MISC 007)
 NUM_CHANS_TO_KEEP           = 124
+exp_num                     = 1
+print("Adult :", is_adult, "Experiment number: ", exp_num, " Number of channels on system adult: ", num_chs_adult-1, " Number of channels child: ", num_chs_child-1)
+
+
 
 
 
@@ -204,24 +219,49 @@ DURATION        = 2
 N_CHANS         = 3
 START_TIME      = 120
 RESOLUTION      = 64 * 3
-SIZE            = 2
+SIZE            = 4
 YLIM            = 20
 DPI             = 600     # Plot quality
 FONTSIZE_ALL    = 14
-FONTSIZE_TITLE  = 19
-FONTSIZE_LABELS = 18  # Title on x and y axis
-FONTSIZE_AXES   = 16  # Values on x and y axes
-FONTSIZE_LEGEND = 13  # Legend
-PADDING         = 20  # Space between axis values and axis label
-
-
+FONTSIZE_TITLE  = 18
+FONTSIZE_LABELS = 14 # 17  # Title on x and y axis
+FONTSIZE_AXES   = 13 # 16  # Values on x and y axes
+FONTSIZE_LEGEND = 13 # 13  # Legend
+PADDING         = 2  # Space between axis values and axis label
 sphere_x, sphere_y, sphere_z, radius = 0.007, -0.017, 0.00, 0.107
 CONSTANT_RADIUS_MULT = 1 # 0.85
+## Option A
+import matplotlib 
+font = {'family' : 'sans-serif',
+        #'weight' : 'bold',
+        'size'   : FONTSIZE_ALL}
+matplotlib.rc('font', **font)
+matplotlib.rc('font', family='sans-serif') 
+matplotlib.rc('font', serif='Times New Roman') 
+matplotlib.rc('text', usetex='False') 
+#matplotlib.rcParams.update({'font.size': 22}) # Updates -> m
+matplotlib.rcParams.update({'font.sans-serif':'Times New Roman'})
+# Only show ticks on the left and bottom spines
+matplotlib.rcParams["axes.spines.right"] = False
+matplotlib.rcParams["axes.spines.top"] = False
+## Option B
+plt.rc('font', size=FONTSIZE_ALL)         # controls default text sizes
+plt.rc('axes', titlesize=FONTSIZE_TITLE)    # fontsize of the axes title
+plt.rc('axes', labelsize=FONTSIZE_AXES)    # fontsize of the x and y labels
+plt.rc('xtick', labelsize=FONTSIZE_AXES)   # fontsize of the tick labels
+plt.rc('ytick', labelsize=FONTSIZE_AXES)   # fontsize of the tick labels
+plt.rc('legend', fontsize=FONTSIZE_LEGEND)   # legend fontsize
+plt.rc('figure', titlesize=FONTSIZE_ALL)  # fontsize of the figure title
 
 
 
 
 
+
+
+SEC_TO_MS                  = 1000 
+PERCENTILE_CONSTANT        = 100
+NUM_EPOCH_SAMPLES          = int((EPOCH_END_ANALYSIS-EPOCH_START_ANALYSIS)*SEC_TO_MS / EPOCH_SIZE_MS + 1) # Number of time samples in an epoch
 
 
 
@@ -242,10 +282,10 @@ if STANDARDISE:
     string_save+="STD=T,"
 else:
     string_save+="STD=F,"
-string_save += " " +str(int(1000*EPOCH_START_ANALYSIS)) + "to" +str(int(1000*EPOCH_END_ANALYSIS))
+string_save += " " +str(int(SEC_TO_MS*EPOCH_START_ANALYSIS)) + "to" +str(int(SEC_TO_MS*EPOCH_END_ANALYSIS))
 if CONT_PREDICTOR_USE_DIFF_CUTOFF:
-    string_save += " "+str(int(100/NUM_BINS_SURPRISE)) + "%"+ "vs"+str(int(100/NUM_BINS_SURPRISE)) + "%"
+    string_save += " "+str(int(PERCENTILE_CONSTANT/NUM_BINS_SURPRISE)) + "%"+ "vs"+str(int(PERCENTILE_CONSTANT/NUM_BINS_SURPRISE)) + "%"
 else:
-    string_save +=" " +str(int(100/NUM_BINS_SURPRISE)) + "%"+ "vs"+str(100-int(100/NUM_BINS_SURPRISE)) + "%"
+    string_save +=" " +str(int(PERCENTILE_CONSTANT/NUM_BINS_SURPRISE)) + "%"+ "vs"+str(PERCENTILE_CONSTANT-int(PERCENTILE_CONSTANT/NUM_BINS_SURPRISE)) + "%"
 print("File to be saved as :", string_save)
 SAVE_EXPERIMENT_NAME = string_save

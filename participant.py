@@ -547,7 +547,7 @@ class Participant():
 
         #print(self.fname_con,self.fname_mrk,self.fname_elp,self.fname_hsp,trigger_channels_known,self.is_adult_folder)
 
-        wait_until_memory_free(required_memory = 0.5, max_wait_time_mins = 0.1) # This requires some memory (set conservatively here as I may run many threads, should only be 500MB)
+        wait_until_memory_free(required_memory = 3.0, max_wait_time_mins = 1) # This requires some memory (set conservatively here as I may run many threads, should only be 500MB)
 
 
         is_adult = self.p_id in adult_participant_strings
@@ -1263,7 +1263,7 @@ class Participant():
                     error_robust_diffs.append(median_diff)
                     error_samples+=1
             if error_samples > 0:
-                self.warn("Replaced %s sound events with the median delay time, the rest were replaced based on actual delay time.. "%(str(error_samples)))
+                self.warn("Replaced %s out of %s sound events with the median delay time, the rest were replaced based on actual delay time.. "%(str(error_samples),str(len(diffs))))
             
             r = 0
             for evt in self.events:
@@ -1575,7 +1575,7 @@ class Participant():
             self.eog_indices, self.eog_scores = self.ica.find_bads_eog(self.raw_cleaned, ch_name=channel_name, measure='correlation', threshold = ICA_THRESHOLD_EOG ) #   # find which ICs match the EOG pattern 
             # Probably should run on continuous data as EOG events aren't that frequent/may not appear in most epochs
             
-            print("Channel %s , EOG indices: %s "%(str(channel_name),self.eog_indices))
+            #print("Channel %s , EOG indices: %s "%(str(channel_name),self.eog_indices))
             #self.eog_epochs.plot_image(combine='mean')        
             self.all_eog_scores[p] = self.eog_scores
             self.all_eog_indices[p] = self.eog_indices
@@ -1871,9 +1871,9 @@ class Participant():
         print("File to be saved as :", string_save)
         SAVE_EXPERIMENT_NAME = string_save
 
-        wait_until_memory_free(required_memory = 2, max_wait_time_mins = 1) # This requires some memory (set conservatively here as I may run many threads, should be < 500MB)
+        wait_until_memory_free(required_memory = 3, max_wait_time_mins = 1.5) # This requires some memory (set conservatively here as I may run many threads, should be < 500MB)
         # Dump participant by participant
-        pickle.dump( self, open( BASE_FOLDER+'ExperimentsNew\\' + str(self.p_id) +string_save+str(".pickle"), "wb" ) )
+        pickle.dump( self, open( BASE_FOLDER+'Experiments Final\\' + str(self.p_id) +string_save+str(".pickle"), "wb" ) )
         
         
     def get_surprise_dir(self):
@@ -2287,7 +2287,7 @@ class Participant():
                 MEG125_picks[idx] = ch.replace("AG", "MEG ") 
 
             MEG125_picks = list(set(MEG125_picks)-set(['MEG 072']))
-            MEG160_picks = list(set(MEG160_picks)-set(['MEG 072']))
+            #MEG160_picks = list(set(MEG160_picks)-set(['MEG 072']))
             print("H2", len(MEG125_picks))
             print("H3", len(MEG160_picks))    
             # for m in range(126,161):
@@ -2335,6 +2335,7 @@ class Participant():
                                 print("PROBLEM PICKING MAG A", attrib, key)
                             try:
                                 obj[key].pick_channels(MEG160_picks)
+                                print(self.p_id, self.is_adult_folder, self.is_adult, self.epochs_ransac_autoreject)
                                 print("H8", len(obj[key].info['ch_names']) )
                             except:
                                 print("PROBLEM PICKING CHANNELS A", attrib, key)
@@ -2349,7 +2350,7 @@ class Participant():
                                 obj[key].reorder_channels(MEG160_picks)
                             except:
                                 print("PROBLEM REORDERING CHANNELS A", attrib, key)
-                                print("MEG 160 picks ", sorted(MEG160_picks))
+                                print("MEG 160 picks ", len(sorted(MEG160_picks)))
                             try:
                                 obj[key].info["chs"] = MEG125_raw.info["chs"]
                             except:
