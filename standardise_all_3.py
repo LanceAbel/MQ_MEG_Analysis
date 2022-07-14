@@ -81,7 +81,7 @@ def apply_z_score_new(ptcp,STANDARDISE=True,channel_wise=False):
 
 EXP_BASE          = r'E:\BigData\MEG\MRES\ME125_MMN_phase1_Yanan\Experiments\\'
 EXP_BASE          = r'E:\BigData\MEG\MRES\ME125_MMN_phase1_Yanan\ExperimentsNew\\' # PE2 Vanilla 20pct -100 to 300\\'
-
+EXP_BASE          = r'E:\BigData\MEG\MRES\ME125_MMN_phase1_Yanan\Experiments Final\\'
 
 os.chdir(EXP_BASE)
 print(EXP_BASE)
@@ -92,7 +92,7 @@ problem_folders = []
 error_messages = []
 folder_num = 1
 #for folder in base_contents[6:7]+base_contents[4:5]+base_contents[22:23]:
-for folder in base_contents[8:9]: # + base_contents[2:3]: # +  # base_contents[14:15]+base_contents[20:21]: # 
+for folder in base_contents[2:3]: # + base_contents[2:3]: # +  # base_contents[14:15]+base_contents[20:21]: # 
 	r = 0
 	tgt_dir = EXP_BASE+folder+'\\'
 	print("Target dir, ", tgt_dir, " folder #: ", folder_num)
