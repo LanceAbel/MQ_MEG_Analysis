@@ -8,7 +8,7 @@ To run (Note: I'm going to replace steps 5-7 with a **do_everything.py **):
 - Note that this can be sped up by running multiple copies of process_all_participants (on different cores)  
 - To do this, change file_num_start and file_num_end to be mutually exclusive between the copies  (e.g. (0, 12) on one, (12,24) on a 2nd core and (24,36) on a third  
 6) Create a standardised copy of the saved participant data by running **standardise_all_3.py**  
-7) Run **save_output_graphs.py**   
+7) Set parameters in and then run **save_all_graphs.py**   
 
 
   
