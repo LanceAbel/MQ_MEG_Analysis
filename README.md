@@ -1,7 +1,7 @@
 To run (Note: I'm going to replace steps 5-7 with a **do_everything.py **):    
 
 1) Install packages as per requirements.txt  
-The HGF toolbox can be obtained from [the TAPAS github repo](https://github.com/translationalneuromodeling/tapas/tree/master/HGF) - and see the [Readme] (https://github.com/translationalneuromodeling/tapas/blob/master/HGF/README.md)  
+The HGF toolbox can be obtained from [the TAPAS github repo](https://github.com/translationalneuromodeling/tapas/tree/master/HGF) - and see the [Readme file](https://github.com/translationalneuromodeling/tapas/blob/master/HGF/README.md)  
 3) Set **config.py**  
 4) Update bad participants and channels per participant ID **(participant_data.py**)  
 5) Update directories as needed in main class objects (**experiment.py, participant.py**) and in **standardise_all_3.py**    
