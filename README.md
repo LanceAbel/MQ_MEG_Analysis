@@ -2,6 +2,9 @@ To run (Note: I'm going to replace steps 5-7 with a **do_everything.py **):
 
 1) Install packages as per requirements.txt  
 The HGF toolbox can be obtained from [the TAPAS github repo](https://github.com/translationalneuromodeling/tapas/tree/master/HGF) - and see the [Readme file](https://github.com/translationalneuromodeling/tapas/blob/master/HGF/README.md)  
+The CS, PS and BS models are  
+- Described in [Gijsen et al's 2021 paper and repo](https://github.com/SamGijsen/SurpriseInSomesthesis)  
+- Calculated in [Kathrin Tertel's BL_Betabern.m file](https://github.com/kathrintertel/Sequential_Bayesian_learner/blob/master/BL_Betabern.m)  
 3) Set **config.py**  
 4) Update bad participants and channels per participant ID **(participant_data.py**)  
 5) Update directories as needed in main class objects (**experiment.py, participant.py**) and in **standardise_all_3.py**    
