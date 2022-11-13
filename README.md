@@ -1,14 +1,15 @@
 To run (Note: I'm going to replace steps 5-7 with a **do_everything.py **):    
 
-1) Install packages as per requirements.txt  
-2) Set **config.py**  
-3) Update bad participants and channels per participant ID **(participant_data.py**)  
-4) Update directories as needed in main class objects (**experiment.py, participant.py**) and in **standardise_all_3.py**    
-5) Run **process_all_participants.py**, which saves each participant's processed data to disk  
+1) Install packages as per requirements.txt
+The HGF toolbox can be obtained from [the TAPAS github repo](https://github.com/translationalneuromodeling/tapas/tree/master/HGF) (and see the [Readme] (https://github.com/translationalneuromodeling/tapas/blob/master/HGF/README.md))  
+3) Set **config.py**  
+4) Update bad participants and channels per participant ID **(participant_data.py**)  
+5) Update directories as needed in main class objects (**experiment.py, participant.py**) and in **standardise_all_3.py**    
+6) Run **process_all_participants.py**, which saves each participant's processed data to disk  
 - Note that this can be sped up by running multiple copies of process_all_participants (on different cores)  
 - To do this, change file_num_start and file_num_end to be mutually exclusive between the copies  (e.g. (0, 12) on one, (12,24) on a 2nd core and (24,36) on a third  
-6) Create a standardised copy of the saved participant data by running **standardise_all_3.py**  
-7) Set parameters in and then run **save_all_graphs.py**   (or save_output_graphs.ipynb)
+7) Create a standardised copy of the saved participant data by running **standardise_all_3.py**  
+8) Set parameters in and then run **save_all_graphs.py**   (or save_output_graphs.ipynb)
 
 
   
