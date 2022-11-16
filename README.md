@@ -1,4 +1,4 @@
-To run (Note: I'm going to replace steps 5-7 with a **do_everything.py **):    
+To run:   
 
 1) Install packages as per requirements.txt  
 The HGF toolbox can be obtained from [the TAPAS github repo](https://github.com/translationalneuromodeling/tapas/tree/master/HGF) - and see the [Readme file](https://github.com/translationalneuromodeling/tapas/blob/master/HGF/README.md)  
